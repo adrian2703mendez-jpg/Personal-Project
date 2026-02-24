@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Course readiness quiz - Let us understand your investing experience level." />
+    <title>Course Readiness Quiz - Seeds of Wealth</title>
+    <link rel="stylesheet" href="Colors.css" />
+    <link rel="stylesheet" href="shared.css" />
+    <link rel="stylesheet" href="introduction.css" />
+</head>
+<body>
+    <main class="card">
+        <h1>Course Readiness Quiz</h1>
+        <p class="lead">Tell us about your experience honest answers help us recommend the right starting point. There are no wrong answers.</p>
+
+        <p class="explain" style="color:var(--muted);margin-top:8px;margin-bottom:12px">This quick, friendly self-assessment helps us understand your current investing knowledge and how actively you engage with investing. Your honest answers let us personalise a recommended starting module from fundamentals like budgeting and introductions if you're just getting started, to intermediate or advanced modules if you already invest. We use your responses only to tailor learning suggestions; answer openly to get the best guidance.</p>
+
+        <form id="quizForm">
+            <fieldset>
+                <legend>1. How much would you say you know about investing?</legend>
+                <div class="options">
+                    <input id="knowRange" type="range" name="know" min="0" max="5" value="0">
+                    <div style="font-size:13px;color:var(--muted);margin-top:6px">0 = None · 5 = Expert — <span id="knowVal">0</span></div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>2. How often do you read or practice investing?</legend>
+                <div class="options">
+                    <label class="option"><input type="radio" name="immerse" value="0"> Never</label>
+                    <label class="option"><input type="radio" name="immerse" value="1"> Occasionally</label>
+                    <label class="option"><input type="radio" name="immerse" value="2"> Monthly</label>
+                    <label class="option"><input type="radio" name="immerse" value="3"> Weekly</label>
+                    <label class="option"><input type="radio" name="immerse" value="4"> Daily</label>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>3. Have you invested real money before?</legend>
+                <div class="options">
+                    <label class="option"><input type="radio" name="experience" value="0"> No</label>
+                    <label class="option"><input type="radio" name="experience" value="1"> Yes — small amount</label>
+                    <label class="option"><input type="radio" name="experience" value="2"> Yes — moderate</label>
+                    <label class="option"><input type="radio" name="experience" value="3"> Yes — significant</label>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>4. Pick the option that best describes your comfort with risk</legend>
+                <div class="options">
+                    <label class="option"><input type="radio" name="risk" value="0"> Prefer no losses</label>
+                    <label class="option"><input type="radio" name="risk" value="1"> Slight risk ok</label>
+                    <label class="option"><input type="radio" name="risk" value="2"> Moderate risk comfortable</label>
+                    <label class="option"><input type="radio" name="risk" value="3"> Comfortable with high volatility</label>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>5. How confident are you in starting to invest today?</legend>
+                <div class="options">
+                    <input id="confRange" type="range" name="conf" min="0" max="5" value="0">
+                    <div style="font-size:13px;color:var(--muted);margin-top:6px">0 = Not confident · 5 = Very confident — <span id="confVal">0</span></div>
+                </div>
+            </fieldset>
+
+            <div class="controls">
+                <small>Be honest this helps us recommend the best starting module for you.</small>
+                <div>
+                    <button type="submit">See Recommendation</button>
+                </div>
+            </div>
+        </form>
+
+        <div id="result" class="result" role="status">
+            <div id="scoreText"></div>
+            <div id="recommendation" class="recommend"></div>
+            <div style="margin-top:10px"><a id="startLink" href="SoW.html">Go to course overview</a></div>
+        </div>
+
+        <!-- Completion modal -->
+        <div id="modalBackdrop" class="modal-backdrop" aria-hidden="true">
+            <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+                <h3 id="modalTitle">All set!</h3>
+                <p>OKAY everything is set, after you close this pop up you will have a warm welcome to the world of financial stability and get ready to start to grow your own seeds</p>
+                <div style="text-align:right;margin-top:12px"><button id="modalClose" class="close">Close</button></div>
+            </div>
+        </div>
+    </main>
+
+        <script>
+        const form = document.getElementById('quizForm');
+        const result = document.getElementById('result');
+        const scoreText = document.getElementById('scoreText');
+        const recommendation = document.getElementById('recommendation');
+        const startLink = document.getElementById('startLink');
+        const knowRange = document.getElementById('knowRange');
+        const knowVal = document.getElementById('knowVal');
+        const confRange = document.getElementById('confRange');
+        const confVal = document.getElementById('confVal');
+
+        // show slider values
+        knowRange.addEventListener('input', ()=> knowVal.textContent = knowRange.value );
+        confRange.addEventListener('input', ()=> confVal.textContent = confRange.value );
+
+        form.addEventListener('submit', (e)=>{
+            e.preventDefault();
+            const data = new FormData(form);
+            // read values (convert to numbers)
+            const know = Number(data.get('know') || 0); // 0-5
+            const immerse = Number(data.get('immerse') || 0); // 0-4
+            const experience = Number(data.get('experience') || 0); // 0-3
+            const risk = Number(data.get('risk') || 0); // 0-3
+            const conf = Number(data.get('conf') || 0); // 0-5
+
+            // require at least one radio for immersion/experience/risk
+            if(data.get('immerse') === null || data.get('experience') === null || data.get('risk') === null){
+                alert('Please answer all questions.');
+                return;
+            }
+
+            // composite score: weight self-knowledge and confidence higher
+            const score = Math.round((know*2 + immerse + experience*1.2 + risk*0.8 + conf*1.5) / 6);
+
+            scoreText.textContent = `Your readiness score: ${score} / 10 (higher = more ready).`;
+
+            // gentle recommendation rules
+            let rec = '';
+            if(score <= 3){
+                rec = 'You seem new to investing. Start with: Introduction to Investing and Financial Planning (basics, budgeting, safety).';
+                startLink.href = 'SoW.html#Introduction to Investing';
+            } else if(score <= 6){
+                rec = 'You have some exposure. We recommend: Investment Strategies and Building a Portfolio (intermediate practice).';
+                startLink.href = 'SoW.html#Investment Strategies';
+            } else {
+                rec = 'Great — you can begin with Risk Management and advanced topics (real estate, crypto modules).';
+                startLink.href = 'SoW.html#Risk Management';
+            }
+
+            recommendation.textContent = rec;
+            result.style.display = 'block';
+            result.scrollIntoView({behavior:'smooth'});
+
+            // show completion modal after result appears
+            setTimeout(()=>{
+                const modalBackdrop = document.getElementById('modalBackdrop');
+                const modalClose = document.getElementById('modalClose');
+                modalBackdrop.style.display = 'flex';
+                modalBackdrop.setAttribute('aria-hidden','false');
+                modalClose.focus();
+                function closeModal(){
+                    modalBackdrop.style.display = 'none';
+                    modalBackdrop.setAttribute('aria-hidden','true');
+                    modalClose.removeEventListener('click', closeModal);
+                }
+                modalClose.addEventListener('click', closeModal);
+                // allow ESC to close
+                document.addEventListener('keydown', function escHandler(e){ if(e.key === 'Escape'){ closeModal(); document.removeEventListener('keydown', escHandler) } });
+            }, 450);
+        });
+        // initialize displayed slider values
+        knowVal.textContent = knowRange.value;
+        confVal.textContent = confRange.value;
+        </script>
+</body>
+</html>

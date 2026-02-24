@@ -1,0 +1,171 @@
+/* Registration page styles */
+
+:root {
+  --bg: var(--color-5);
+  --accent: var(--color-2);
+  --muted: var(--color-1);
+  --danger: var(--danger);
+}
+
+body {
+  background: var(--bg);
+  margin: 0;
+  padding: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.card {
+  width: 100%;
+  max-width: 460px;
+}
+
+h1 {
+  margin: 0 0 6px;
+  font-size: 20px;
+  color: var(--color-1);
+}
+
+p.lead {
+  margin: 0 0 18px;
+  color: var(--muted-text);
+  font-size: 14px;
+}
+
+form {
+  display: grid;
+  gap: 12px;
+}
+
+label {
+  display: block;
+  font-size: 13px;
+  color: var(--color-1);
+  margin-bottom: 6px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+select,
+textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--color-1);
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="tel"]:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+  gap: 12px;
+}
+
+button[type="submit"] {
+  background: var(--accent);
+  color: #fff;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+  white-space: nowrap;
+  transition: background 0.2s ease;
+}
+
+button[type="submit"]:hover {
+  background: var(--color-1);
+}
+
+.terms {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--muted-text);
+}
+
+.terms a {
+  color: var(--accent);
+}
+
+.terms a:hover {
+  color: var(--color-1);
+}
+
+input[type="checkbox"] {
+  cursor: pointer;
+}
+
+small.muted {
+  color: var(--muted-text);
+}
+
+small.muted a {
+  color: var(--accent);
+}
+
+.error {
+  color: var(--danger);
+  font-size: 13px;
+  margin-top: 6px;
+  display: none;
+}
+
+.success {
+  color: var(--color-3);
+  font-size: 14px;
+  margin-top: 8px;
+  display: none;
+}
+
+@media (max-width: 520px) {
+  body {
+    padding: 18px;
+  }
+
+  .card {
+    padding: 18px;
+  }
+
+  .row {
+    grid-template-columns: 1fr;
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  button[type="submit"] {
+    width: 100%;
+  }
+}

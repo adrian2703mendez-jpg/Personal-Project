@@ -1,0 +1,12 @@
+{
+  "users": [
+    {
+      "id": "1767857664009",
+      "fullname": "Adrian",
+      "email": "adrian2703mendez@gmail.com",
+      "password": "$2b$10$aBCvTzEN1nCtrkQzgqGjr.cWsa4zqc6jr1CKEJUvhRR1EAbcohzYS",
+      "phone": "+971563027582",
+      "createdAt": "2026-01-08T07:34:24.009Z"
+    }
+  ]
+}

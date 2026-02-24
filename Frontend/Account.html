@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Account - Seeds of Wealth</title>
+  <link rel="stylesheet" href="Colors.css">
+  <link rel="stylesheet" href="shared.css">
+  <link rel="stylesheet" href="account.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="brand">
+        <a href="Lobby.html" class="brand-logo">🌱 Seeds of Wealth</a>
+      </div>
+      <div class="header-actions">
+        <button class="btn-icon" onclick="goIntro()" title="Info">ℹ️</button>
+        <button class="btn-icon" onclick="logout()" title="Logout">🚪</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="account-main">
+    <!-- Sidebar -->
+    <aside class="account-sidebar">
+      <div class="profile-card">
+        <div class="profile-avatar">👤</div>
+        <div class="profile-info">
+          <h3 id="userFullname">Loading...</h3>
+          <p id="userEmail">user@example.com</p>
+        </div>
+      </div>
+
+      <nav class="account-nav">
+        <button class="nav-item active" onclick="switchTab('overview')">📊 Overview</button>
+        <button class="nav-item" onclick="switchTab('courses')">📚 My Courses</button>
+        <button class="nav-item" onclick="switchTab('badges')">🏆 Badges</button>
+        <button class="nav-item" onclick="switchTab('stats')">📈 Statistics</button>
+        <button class="nav-item" onclick="switchTab('settings')">⚙️ Settings</button>
+      </nav>
+
+      <div class="account-actions">
+        <button class="btn-primary btn-block" onclick="logout()">Sign Out</button>
+      </div>
+    </aside>
+
+    <!-- Content Area -->
+    <section class="account-content">
+      <!-- Overview Tab -->
+      <div id="overview" class="tab-content active">
+        <div class="content-header">
+          <h2>Welcome Back!</h2>
+          <p id="lastAccessed">Last accessed: Loading...</p>
+        </div>
+
+        <div class="quick-stats">
+          <div class="stat-card">
+            <div class="stat-icon">📚</div>
+            <div class="stat-details">
+              <div class="stat-label">Courses Enrolled</div>
+              <div class="stat-value" id="enrolledCount">0</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div class="stat-details">
+              <div class="stat-label">Completed Courses</div>
+              <div class="stat-value" id="completedCount">0</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">📖</div>
+            <div class="stat-details">
+              <div class="stat-label">Lessons Completed</div>
+              <div class="stat-value" id="lessonsCount">0</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">🏆</div>
+            <div class="stat-details">
+              <div class="stat-label">Badges Earned</div>
+              <div class="stat-value" id="badgesCount">0</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon">💰</div>
+            <div class="stat-details">
+              <div class="stat-label">Total Spent</div>
+              <div class="stat-value" id="totalSpent">$0.00</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="progress-section">
+          <h3>Overall Progress</h3>
+          <div class="progress-bar-container">
+            <div class="progress-bar">
+              <div class="progress-fill" id="overallProgress" style="width: 0%"></div>
+            </div>
+            <p class="progress-text" id="progressText">0% Complete</p>
+          </div>
+        </div>
+
+        <div class="recent-activity">
+          <h3>Recent Activity</h3>
+          <div id="activityList" class="activity-list">
+            <p style="color: var(--muted-text);">No recent activity</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Courses Tab -->
+      <div id="courses" class="tab-content">
+        <div class="content-header">
+          <h2>My Courses</h2>
+        </div>
+
+        <div class="courses-container">
+          <div class="course-section">
+            <h3>📚 Enrolled Courses</h3>
+            <div id="enrolledCourses" class="courses-list">
+              <p style="color: var(--muted-text);">No courses enrolled yet</p>
+            </div>
+          </div>
+
+          <div class="course-section">
+            <h3>✅ Completed Courses</h3>
+            <div id="completedCourses" class="courses-list">
+              <p style="color: var(--muted-text);">No courses completed yet</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Badges Tab -->
+      <div id="badges" class="tab-content">
+        <div class="content-header">
+          <h2>Achievements & Badges</h2>
+        </div>
+
+        <div class="badges-grid" id="badgesGrid">
+          <div class="badge-item locked">
+            <div class="badge-icon">🎓</div>
+            <div class="badge-name">First Course</div>
+            <p>Complete your first course</p>
+          </div>
+          <div class="badge-item locked">
+            <div class="badge-icon">🔥</div>
+            <div class="badge-name">10-Day Streak</div>
+            <p>Learn for 10 consecutive days</p>
+          </div>
+          <div class="badge-item locked">
+            <div class="badge-icon">⭐</div>
+            <div class="badge-name">5 Courses</div>
+            <p>Complete 5 courses</p>
+          </div>
+          <div class="badge-item locked">
+            <div class="badge-icon">💎</div>
+            <div class="badge-name">Expert</div>
+            <p>Complete 10 courses</p>
+          </div>
+          <div class="badge-item locked">
+            <div class="badge-icon">🚀</div>
+            <div class="badge-name">Speed Learner</div>
+            <p>Complete a course in 7 days</p>
+          </div>
+          <div class="badge-item locked">
+            <div class="badge-icon">🌟</div>
+            <div class="badge-name">Master</div>
+            <p>Complete all beginner courses</p>
+          </div>
+        </div>
+
+        <div id="earnedBadges" style="display: none;">
+          <h3 style="margin-top: 30px;">Earned Badges</h3>
+          <div class="badges-grid" id="earnedBadgesGrid"></div>
+        </div>
+      </div>
+
+      <!-- Statistics Tab -->
+      <div id="stats" class="tab-content">
+        <div class="content-header">
+          <h2>Learning Statistics</h2>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card-large">
+            <h4>Learning Streak</h4>
+            <div class="stat-value-large" id="streak">0 days</div>
+            <p>Keep learning to maintain your streak!</p>
+          </div>
+
+          <div class="stat-card-large">
+            <h4>Total Learning Time</h4>
+            <div class="stat-value-large" id="learningTime">0 hours</div>
+            <p>Invested in your financial education</p>
+          </div>
+
+          <div class="stat-card-large">
+            <h4>Difficulty Breakdown</h4>
+            <div id="difficultyBreakdown" style="margin-top: 15px;">
+              <div style="margin: 8px 0; display: flex; justify-content: space-between;">
+                <span>🟢 Beginner:</span> <strong id="beginnerCount">0</strong>
+              </div>
+              <div style="margin: 8px 0; display: flex; justify-content: space-between;">
+                <span>🟡 Intermediate:</span> <strong id="intermediateCount">0</strong>
+              </div>
+              <div style="margin: 8px 0; display: flex; justify-content: space-between;">
+                <span>🔴 Advanced:</span> <strong id="advancedCount">0</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-card-large">
+            <h4>Course Completion Rate</h4>
+            <div id="completionRate" style="margin-top: 15px; text-align: center;">
+              <div class="stat-value-large" id="completionPercentage">0%</div>
+              <p id="completionRateText">Start a course to track progress</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings Tab -->
+      <div id="settings" class="tab-content">
+        <div class="content-header">
+          <h2>Account Settings</h2>
+        </div>
+
+        <div class="settings-group">
+          <h3>Account Information</h3>
+          <div class="setting-item">
+            <label>Full Name</label>
+            <input type="text" id="settingsFullname" readonly>
+          </div>
+          <div class="setting-item">
+            <label>Email</label>
+            <input type="email" id="settingsEmail" readonly>
+          </div>
+          <div class="setting-item">
+            <label>Phone</label>
+            <input type="tel" id="settingsPhone" readonly>
+          </div>
+          <div class="setting-item">
+            <label>Member Since</label>
+            <input type="text" id="settingsMemberSince" readonly>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <h3>Preferences</h3>
+          <div class="setting-item checkbox">
+            <input type="checkbox" id="emailNotifications" checked>
+            <label for="emailNotifications">Email notifications for course updates</label>
+          </div>
+          <div class="setting-item checkbox">
+            <input type="checkbox" id="weeklyDigest" checked>
+            <label for="weeklyDigest">Weekly learning digest</label>
+          </div>
+        </div>
+
+        <div class="settings-group danger">
+          <h3>Danger Zone</h3>
+          <p style="color: var(--muted-text); margin-bottom: 15px;">These actions cannot be undone.</p>
+          <button class="btn-danger" onclick="resetProgress()">Reset All Progress</button>
+          <button class="btn-danger" onclick="deleteAccount()">Delete Account</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Initialize on page load
+    window.addEventListener('DOMContentLoaded', function() {
+      const userId = localStorage.getItem('userId');
+      
+      if (!userId) {
+        window.location.href = 'Login.html';
+        return;
+      }
+
+      loadUserData(userId);
+    });
+
+    // Load user data from backend
+    async function loadUserData(userId) {
+      try {
+        const response = await fetch(`http://localhost:5000/api/user/${userId}`);
+        const data = await response.json();
+
+        if (data.success) {
+          const user = data.user;
+          const progress = user.progress || {
+            completedCourses: [],
+            enrolledCourses: [],
+            lessonsCompleted: 0,
+            totalSpent: 0,
+            badges: [],
+            lastAccessed: new Date().toISOString()
+          };
+
+          // Populate user info
+          document.getElementById('userFullname').textContent = user.fullname;
+          document.getElementById('userEmail').textContent = user.email;
+          document.getElementById('settingsFullname').value = user.fullname;
+          document.getElementById('settingsEmail').value = user.email;
+          document.getElementById('settingsPhone').value = user.phone || 'Not provided';
+          document.getElementById('settingsMemberSince').value = new Date(user.createdAt).toLocaleDateString();
+
+          // Update overview stats
+          updateOverviewStats(progress);
+          updateCoursesDisplay(progress);
+          updateBadgesDisplay(progress);
+          updateStatistics(progress);
+        }
+      } catch (error) {
+        console.error('Error loading user data:', error);
+      }
+    }
+
+    // Update overview statistics
+    function updateOverviewStats(progress) {
+      const enrolled = progress.enrolledCourses || [];
+      const completed = progress.completedCourses || [];
+      const lessons = progress.lessonsCompleted || 0;
+      const badges = progress.badges || [];
+      const spent = progress.totalSpent || 0;
+      const lastAccessed = progress.lastAccessed || new Date().toISOString();
+
+      document.getElementById('enrolledCount').textContent = enrolled.length;
+      document.getElementById('completedCount').textContent = completed.length;
+      document.getElementById('lessonsCount').textContent = lessons;
+      document.getElementById('badgesCount').textContent = badges.length;
+      document.getElementById('totalSpent').textContent = `$${spent.toFixed(2)}`;
+      
+      const lastDate = new Date(lastAccessed).toLocaleDateString();
+      document.getElementById('lastAccessed').textContent = `Last accessed: ${lastDate}`;
+
+      // Calculate overall progress
+      const totalCourses = 17;
+      const progressPercentage = Math.round((completed.length / totalCourses) * 100);
+      document.getElementById('overallProgress').style.width = progressPercentage + '%';
+      document.getElementById('progressText').textContent = progressPercentage + '% Complete (' + completed.length + '/' + totalCourses + ' courses)';
+
+      // Update activity
+      updateActivityList(progress);
+    }
+
+    // Update activity list
+    function updateActivityList(progress) {
+      const activityList = document.getElementById('activityList');
+      const activities = [];
+
+      if ((progress.completedCourses || []).length > 0) {
+        activities.push({
+          type: 'course_completed',
+          text: `Completed ${progress.completedCourses.length} course(s)`,
+          date: progress.lastAccessed
+        });
+      }
+
+      if ((progress.lessonsCompleted || 0) > 0) {
+        activities.push({
+          type: 'lessons_completed',
+          text: `Completed ${progress.lessonsCompleted} lesson(s)`,
+          date: progress.lastAccessed
+        });
+      }
+
+      if ((progress.badges || []).length > 0) {
+        activities.push({
+          type: 'badges_earned',
+          text: `Earned ${progress.badges.length} badge(s)`,
+          date: progress.lastAccessed
+        });
+      }
+
+      if (activities.length === 0) {
+        activityList.innerHTML = '<p style="color: var(--muted-text);">No recent activity. Start learning today!</p>';
+      } else {
+        activityList.innerHTML = activities.map(activity => `
+          <div class="activity-item">
+            <div class="activity-text">${activity.text}</div>
+            <div class="activity-date">${new Date(activity.date).toLocaleDateString()}</div>
+          </div>
+        `).join('');
+      }
+    }
+
+    // Update courses display
+    function updateCoursesDisplay(progress) {
+      const courseDatabase = {
+        1: { title: 'Investment Basics 101', difficulty: 'Beginner' },
+        2: { title: 'Stock Market Fundamentals', difficulty: 'Beginner' },
+        3: { title: 'Understanding Bonds & Fixed Income', difficulty: 'Beginner' },
+        4: { title: 'Diversification Essentials', difficulty: 'Beginner' },
+        5: { title: 'Tax-Efficient Investing', difficulty: 'Beginner' },
+        6: { title: 'Technical Analysis Basics', difficulty: 'Intermediate' },
+        7: { title: 'Fundamental Analysis Deep Dive', difficulty: 'Intermediate' },
+        8: { title: 'Real Estate Investment Strategies', difficulty: 'Intermediate' },
+        9: { title: 'Cryptocurrency for Investors', difficulty: 'Intermediate' },
+        10: { title: 'Portfolio Construction & Rebalancing', difficulty: 'Intermediate' },
+        11: { title: 'Risk Management Strategies', difficulty: 'Intermediate' },
+        12: { title: 'Options Trading Mastery', difficulty: 'Advanced' },
+        13: { title: 'Futures & Derivatives', difficulty: 'Advanced' },
+        14: { title: 'Advanced Portfolio Management', difficulty: 'Advanced' },
+        15: { title: 'Algorithmic Trading Fundamentals', difficulty: 'Advanced' },
+        16: { title: 'Market Analysis & Macroeconomics', difficulty: 'Advanced' },
+        17: { title: 'Alternative Investments & Commodities', difficulty: 'Advanced' }
+      };
+
+      const enrolled = (progress.enrolledCourses || []).map(id => ({
+        id,
+        ...courseDatabase[id]
+      }));
+
+      const completed = (progress.completedCourses || []).map(id => ({
+        id,
+        ...courseDatabase[id]
+      }));
+
+      const enrolledDiv = document.getElementById('enrolledCourses');
+      if (enrolled.length === 0) {
+        enrolledDiv.innerHTML = '<p style="color: var(--muted-text);">No courses enrolled yet</p>';
+      } else {
+        enrolledDiv.innerHTML = enrolled.map(course => `
+          <div class="course-item">
+            <div class="course-title">${course.title}</div>
+            <div class="course-difficulty">${course.difficulty}</div>
+          </div>
+        `).join('');
+      }
+
+      const completedDiv = document.getElementById('completedCourses');
+      if (completed.length === 0) {
+        completedDiv.innerHTML = '<p style="color: var(--muted-text);">No courses completed yet</p>';
+      } else {
+        completedDiv.innerHTML = completed.map(course => `
+          <div class="course-item completed">
+            <div class="course-title">✅ ${course.title}</div>
+            <div class="course-difficulty">${course.difficulty}</div>
+          </div>
+        `).join('');
+      }
+    }
+
+    // Update badges display
+    function updateBadgesDisplay(progress) {
+      const badges = progress.badges || [];
+      
+      if (badges.length > 0) {
+        document.getElementById('earnedBadges').style.display = 'block';
+        const earnedBadgesGrid = document.getElementById('earnedBadgesGrid');
+        earnedBadgesGrid.innerHTML = badges.map(badge => `
+          <div class="badge-item earned">
+            <div class="badge-icon">${badge.icon || '🏆'}</div>
+            <div class="badge-name">${badge.name}</div>
+            <p>${badge.description}</p>
+          </div>
+        `).join('');
+      }
+    }
+
+    // Update statistics
+    function updateStatistics(progress) {
+      const completed = (progress.completedCourses || []).length;
+      const lessons = progress.lessonsCompleted || 0;
+
+      // Calculate streak (mock - would need backend tracking)
+      document.getElementById('streak').textContent = '0 days';
+
+      // Calculate learning time (mock - 1 hour per lesson)
+      const hours = lessons;
+      document.getElementById('learningTime').textContent = hours + ' hours';
+
+      // Difficulty breakdown
+      const courseDatabase = {
+        1: 'Beginner', 2: 'Beginner', 3: 'Beginner', 4: 'Beginner', 5: 'Beginner',
+        6: 'Intermediate', 7: 'Intermediate', 8: 'Intermediate', 9: 'Intermediate', 10: 'Intermediate', 11: 'Intermediate',
+        12: 'Advanced', 13: 'Advanced', 14: 'Advanced', 15: 'Advanced', 16: 'Advanced', 17: 'Advanced'
+      };
+
+      const completedCourses = progress.completedCourses || [];
+      const beginnerCompleted = completedCourses.filter(id => courseDatabase[id] === 'Beginner').length;
+      const intermediateCompleted = completedCourses.filter(id => courseDatabase[id] === 'Intermediate').length;
+      const advancedCompleted = completedCourses.filter(id => courseDatabase[id] === 'Advanced').length;
+
+      document.getElementById('beginnerCount').textContent = beginnerCompleted + '/5';
+      document.getElementById('intermediateCount').textContent = intermediateCompleted + '/6';
+      document.getElementById('advancedCount').textContent = advancedCompleted + '/6';
+
+      // Completion rate
+      const enrolled = (progress.enrolledCourses || []).length;
+      if (enrolled > 0) {
+        const completionRate = Math.round((completed / enrolled) * 100);
+        document.getElementById('completionPercentage').textContent = completionRate + '%';
+        document.getElementById('completionRateText').textContent = `${completed} of ${enrolled} enrolled courses completed`;
+      }
+    }
+
+    // Switch tabs
+    function switchTab(tabName) {
+      // Hide all tabs
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+
+      // Remove active class from nav items
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+      });
+
+      // Show selected tab
+      document.getElementById(tabName).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    // Navigation functions
+    function goIntro() {
+      window.location.href = 'Introduction to course.html';
+    }
+
+    function logout() {
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('userProgress');
+      window.location.href = 'Login.html';
+    }
+
+    // Settings functions
+    function resetProgress() {
+      if (confirm('Are you sure you want to reset all your progress? This cannot be undone.')) {
+        const userId = localStorage.getItem('userId');
+        fetch(`http://localhost:5000/api/progress/${userId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            completedCourses: [],
+            enrolledCourses: [],
+            lessonsCompleted: 0,
+            totalSpent: 0,
+            badges: []
+          })
+        }).then(() => {
+          alert('Progress reset successfully');
+          location.reload();
+        });
+      }
+    }
+
+    function deleteAccount() {
+      if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+        alert('Account deletion feature would be implemented here');
+        // In production, this would call a DELETE endpoint
+      }
+    }
+  </script>
+</body>
+</html>

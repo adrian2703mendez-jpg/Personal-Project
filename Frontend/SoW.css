@@ -1,0 +1,115 @@
+/* Seeds of Wealth page styles */
+
+/* Immersive hero header */
+.site-hero {
+  width: 100%;
+  padding: 64px 20px;
+  background: linear-gradient(135deg, rgba(58, 163, 255, 0.09), rgba(96, 224, 184, 0.04));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 28px;
+  position: relative;
+  overflow: hidden;
+  flex-wrap: wrap;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.nav-link {
+  color: var(--color-2);
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: rgba(58, 163, 255, 0.1);
+  border: 1px solid var(--color-2);
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+  background: rgba(58, 163, 255, 0.2);
+}
+
+/* Decorative background element */
+.site-hero::before {
+  content: "";
+  position: absolute;
+  left: -80px;
+  top: -80px;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(96, 224, 184, 0.18), transparent 40%);
+  filter: blur(18px);
+  transform: translateZ(0);
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.hero-inner {
+  max-width: 1100px;
+  padding: 0 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.site-hero h1 {
+  font-size: 44px;
+  margin: 0;
+  color: var(--color-1);
+  letter-spacing: 0.4px;
+}
+
+.site-hero .hero-sub {
+  margin: 10px 0 16px;
+  color: var(--muted-text);
+  font-size: 16px;
+}
+
+.hero-cta {
+  background: var(--color-2);
+  color: #06202b;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-weight: 800;
+  display: inline-block;
+  transition: all 0.2s ease;
+}
+
+.hero-cta:hover {
+  filter: brightness(0.98);
+  transform: translateY(-1px);
+}
+
+/* Main content sections */
+section {
+  margin-bottom: 24px;
+}
+
+@media (max-width: 720px) {
+  .site-hero {
+    padding: 40px 18px;
+  }
+
+  .site-hero h1 {
+    font-size: 28px;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .nav-link,
+  .hero-cta {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}

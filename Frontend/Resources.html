@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Resources & Materials - Seeds of Wealth</title>
+  <link rel="stylesheet" href="Colors.css">
+  <link rel="stylesheet" href="shared.css">
+  <link rel="stylesheet" href="resources.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="Lobby.html">Seeds of Wealth</a>
+      <nav class="header-nav">
+        <a class="nav-link" href="Lobby.html">Lobby</a>
+        <a class="nav-link" href="Introduction to course.html">Info</a>
+      </nav>
+      <div class="header-actions">
+        <a class="nav-link" href="Login.html">Account</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Page Header -->
+    <section class="page-header" aria-label="Page header">
+      <h1>Course Resources</h1>
+      <p>Download guides, templates, and reference materials to support your learning</p>
+    </section>
+
+    <!-- Search & Filter -->
+    <section class="filter-section" aria-label="Resource filters">
+      <div class="search-box">
+        <input 
+          type="text" 
+          id="resourceSearch" 
+          class="search-input" 
+          placeholder="Search resources..."
+          aria-label="Search resources"
+        >
+        <span class="search-icon">🔍</span>
+      </div>
+
+      <div class="filter-buttons">
+        <button class="filter-btn active" onclick="filterResources('all')">All</button>
+        <button class="filter-btn" onclick="filterResources('guides')">📘 Guides</button>
+        <button class="filter-btn" onclick="filterResources('templates')">📋 Templates</button>
+        <button class="filter-btn" onclick="filterResources('references')">📚 References</button>
+        <button class="filter-btn" onclick="filterResources('spreadsheets')">📊 Spreadsheets</button>
+      </div>
+    </section>
+
+    <!-- Resources Grid -->
+    <section class="resources-grid" id="resourcesContainer" aria-label="Available resources">
+      <!-- Resources will be loaded here -->
+    </section>
+
+    <!-- Resource Details Modal (hidden by default) -->
+    <div class="modal" id="resourceModal" style="display: none;">
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <div id="modalBody">
+          <!-- Modal content will be inserted here -->
+        </div>
+      </div>
+    </div>
+
+    <footer class="lobby-footer" style="margin-top:48px;text-align:center;padding-bottom:28px;">
+      <small>Need help? <a href="Questions.html">Contact us</a></small>
+    </footer>
+  </main>
+
+  <script>
+    // Resources data
+    const resourcesData = [
+      {
+        id: 1,
+        title: "Stock Market Glossary",
+        description: "Comprehensive glossary of common stock market terms and definitions",
+        category: "references",
+        type: "PDF",
+        size: "2.3 MB",
+        icon: "📚",
+        module: "Module 1",
+        downloadCount: 1523,
+        rating: 4.8
+      },
+      {
+        id: 2,
+        title: "Portfolio Tracker Spreadsheet",
+        description: "Excel template for tracking your investment portfolio performance",
+        category: "spreadsheets",
+        type: "XLSX",
+        size: "1.1 MB",
+        icon: "📊",
+        module: "Module 4",
+        downloadCount: 2341,
+        rating: 4.9
+      },
+      {
+        id: 3,
+        title: "Getting Started Guide",
+        description: "Step-by-step guide to opening your first investment account",
+        category: "guides",
+        type: "PDF",
+        size: "1.8 MB",
+        icon: "📖",
+        module: "Module 1",
+        downloadCount: 892,
+        rating: 4.7
+      },
+      {
+        id: 4,
+        title: "Stock Analysis Template",
+        description: "Template for conducting fundamental analysis on stocks",
+        category: "templates",
+        type: "XLSX",
+        size: "845 KB",
+        icon: "📋",
+        module: "Module 3",
+        downloadCount: 1456,
+        rating: 4.6
+      },
+      {
+        id: 5,
+        title: "Market Analysis Checklist",
+        description: "Checklist for performing technical and fundamental analysis",
+        category: "guides",
+        type: "PDF",
+        size: "982 KB",
+        icon: "✓",
+        module: "Module 4",
+        downloadCount: 678,
+        rating: 4.5
+      },
+      {
+        id: 6,
+        title: "Risk Assessment Framework",
+        description: "Framework for evaluating investment risk and creating balanced portfolios",
+        category: "references",
+        type: "PDF",
+        size: "1.5 MB",
+        icon: "⚖️",
+        module: "Module 3",
+        downloadCount: 934,
+        rating: 4.7
+      },
+      {
+        id: 7,
+        title: "Investment Tracker",
+        description: "Comprehensive spreadsheet for tracking trades and performance metrics",
+        category: "spreadsheets",
+        type: "XLSX",
+        size: "2.1 MB",
+        icon: "📊",
+        module: "Module 2",
+        downloadCount: 1789,
+        rating: 4.8
+      },
+      {
+        id: 8,
+        title: "Tax Planning Guide",
+        description: "Guide to tax-efficient investing and capital gains management",
+        category: "guides",
+        type: "PDF",
+        size: "2.4 MB",
+        icon: "📖",
+        module: "Module 5",
+        downloadCount: 567,
+        rating: 4.6
+      },
+      {
+        id: 9,
+        title: "Dividend Tracking Sheet",
+        description: "Template for tracking dividend income and reinvestment",
+        category: "spreadsheets",
+        type: "XLSX",
+        size: "956 KB",
+        icon: "💰",
+        module: "Module 2",
+        downloadCount: 1123,
+        rating: 4.7
+      },
+      {
+        id: 10,
+        title: "Financial Ratios Reference",
+        description: "Complete reference guide for financial ratios used in stock analysis",
+        category: "references",
+        type: "PDF",
+        size: "3.2 MB",
+        icon: "📚",
+        module: "Module 4",
+        downloadCount: 2104,
+        rating: 4.9
+      }
+    ];
+
+    let currentFilter = 'all';
+    let filteredResources = [...resourcesData];
+
+    // Initialize
+    function initializePage() {
+      displayResources(resourcesData);
+      setupEventListeners();
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+      document.getElementById('resourceSearch').addEventListener('input', filterBySearch);
+    }
+
+    // Display resources
+    function displayResources(resources) {
+      const container = document.getElementById('resourcesContainer');
+      
+      if (resources.length === 0) {
+        container.innerHTML = `
+          <div class="no-results" style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+            <p style="color: var(--muted-text); font-size: 16px;">No resources found matching your criteria.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = resources.map(resource => `
+        <div class="resource-card">
+          <div class="resource-icon">${resource.icon}</div>
+          
+          <div class="resource-header">
+            <h3>${resource.title}</h3>
+            <p class="resource-description">${resource.description}</p>
+          </div>
+
+          <div class="resource-meta">
+            <span class="meta-item">📁 ${resource.type}</span>
+            <span class="meta-item">💾 ${resource.size}</span>
+            <span class="meta-item">📍 ${resource.module}</span>
+          </div>
+
+          <div class="resource-stats">
+            <span class="stat">
+              <span class="stat-icon">⬇️</span>
+              <span class="stat-value">${resource.downloadCount}</span>
+              <span class="stat-label">Downloads</span>
+            </span>
+            <span class="stat">
+              <span class="stat-icon">⭐</span>
+              <span class="stat-value">${resource.rating}</span>
+              <span class="stat-label">Rating</span>
+            </span>
+          </div>
+
+          <div class="resource-actions">
+            <button class="btn-download" onclick="downloadResource(${resource.id})">
+              📥 Download
+            </button>
+            <button class="btn-info" onclick="showResourceDetails(${resource.id})">
+              ℹ️ Details
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Filter resources
+    function filterResources(category) {
+      currentFilter = category;
+      
+      // Update button states
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+
+      applyFilters();
+    }
+
+    // Filter by search
+    function filterBySearch(e) {
+      applyFilters();
+    }
+
+    // Apply all filters
+    function applyFilters() {
+      const searchTerm = document.getElementById('resourceSearch').value.toLowerCase();
+      
+      filteredResources = resourcesData.filter(resource => {
+        const matchesCategory = currentFilter === 'all' || resource.category === currentFilter;
+        const matchesSearch = resource.title.toLowerCase().includes(searchTerm) ||
+                            resource.description.toLowerCase().includes(searchTerm);
+        return matchesCategory && matchesSearch;
+      });
+
+      displayResources(filteredResources);
+    }
+
+    // Download resource
+    function downloadResource(resourceId) {
+      const resource = resourcesData.find(r => r.id === resourceId);
+      alert(`Downloading: ${resource.title}\n\nFile: ${resource.title}.${resource.type.toLowerCase()}\nSize: ${resource.size}`);
+      // In a real application, this would trigger a download
+    }
+
+    // Show resource details
+    function showResourceDetails(resourceId) {
+      const resource = resourcesData.find(r => r.id === resourceId);
+      const modal = document.getElementById('resourceModal');
+      const modalBody = document.getElementById('modalBody');
+
+      modalBody.innerHTML = `
+        <div class="modal-header">
+          <h2>${resource.title}</h2>
+          <p class="modal-category">${resource.module} • ${resource.category.charAt(0).toUpperCase() + resource.category.slice(1)}</p>
+        </div>
+
+        <div class="modal-description">
+          <h3>About this resource</h3>
+          <p>${resource.description}</p>
+        </div>
+
+        <div class="modal-specs">
+          <div class="spec-item">
+            <label>File Type</label>
+            <p>${resource.type}</p>
+          </div>
+          <div class="spec-item">
+            <label>File Size</label>
+            <p>${resource.size}</p>
+          </div>
+          <div class="spec-item">
+            <label>Downloads</label>
+            <p>${resource.downloadCount}</p>
+          </div>
+          <div class="spec-item">
+            <label>Rating</label>
+            <p>⭐ ${resource.rating} / 5.0</p>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-download" onclick="downloadResource(${resource.id})">📥 Download Now</button>
+          <button class="btn-close" onclick="closeModal()">Close</button>
+        </div>
+      `;
+
+      modal.style.display = 'block';
+    }
+
+    // Close modal
+    function closeModal() {
+      document.getElementById('resourceModal').style.display = 'none';
+    }
+
+    // Close modal on background click
+    window.onclick = function(event) {
+      const modal = document.getElementById('resourceModal');
+      if (event.target === modal) {
+        modal.style.display = 'none';
+      }
+    }
+
+    function goToAccount(event) {
+      event.preventDefault();
+      const userId = localStorage.getItem('userId');
+      if (userId) {
+        window.location.href = 'Account.html';
+      } else {
+        window.location.href = 'Login.html';
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', initializePage);
+  </script>
+</body>
+</html>

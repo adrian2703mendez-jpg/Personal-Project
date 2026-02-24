@@ -1,0 +1,11 @@
+:root {
+  /* Dark theme palette */
+  --color-1: #E6F7FF;    /* primary text */
+  --color-2: #3AA3FF;    /* accent */
+  --color-3: #60E0B8;    /* success/accent2 */
+  --color-4: #89A6B8;    /* muted */
+  --color-5: #071427;    /* page background */
+  --card:    #0E2433;    /* card background */
+  --muted-text: rgba(230,247,255,0.78);
+  --danger:  #FF6B6B;
+}

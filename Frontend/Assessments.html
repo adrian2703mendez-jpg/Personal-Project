@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Assessments & Quizzes - Seeds of Wealth</title>
+  <link rel="stylesheet" href="Colors.css">
+  <link rel="stylesheet" href="shared.css">
+  <link rel="stylesheet" href="assessments.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="Lobby.html">Seeds of Wealth</a>
+      <nav class="header-nav">
+        <a class="nav-link" href="Lobby.html">Lobby</a>
+        <a class="nav-link" href="Introduction to course.html">Info</a>
+      </nav>
+      <div class="header-actions">
+        <a class="nav-link" href="Login.html">Account</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Page Header -->
+    <section class="page-header" aria-label="Page header">
+      <h1>Assessments & Quizzes</h1>
+      <p>Test your knowledge and track your understanding</p>
+    </section>
+
+    <!-- Quiz Container -->
+    <div class="quiz-wrapper" id="quizWrapper">
+      <!-- Quiz List (Before Taking) -->
+      <section class="quiz-list-view" id="quizListView">
+        <div class="assessments-grid" id="assessmentsGrid">
+          <!-- Quizzes will be loaded here -->
+        </div>
+      </section>
+
+      <!-- Quiz Taking View -->
+      <section class="quiz-taking-view" id="quizTakingView" style="display: none;">
+        <div class="quiz-header">
+          <button class="btn-back" onclick="exitQuiz()">← Back to Assessments</button>
+          <h2 id="quizTitle">Quiz Title</h2>
+          <div class="quiz-timer">
+            <span class="timer-icon">⏱️</span>
+            <span id="timeRemaining">Time remaining: --</span>
+          </div>
+        </div>
+
+        <div class="quiz-progress">
+          <div class="progress-bar">
+            <div class="progress-fill" id="quizProgressFill" style="width: 0%;"></div>
+          </div>
+          <span id="questionCount" class="progress-text">Question 1 of 10</span>
+        </div>
+
+        <div class="quiz-content">
+          <div id="questionContainer" class="question-container">
+            <!-- Questions will be rendered here -->
+          </div>
+
+          <div class="quiz-navigation">
+            <button id="prevQuestionBtn" class="btn-nav" onclick="previousQuestion()" disabled>← Previous</button>
+            <button id="nextQuestionBtn" class="btn-nav" onclick="nextQuestion()">Next →</button>
+            <button id="submitBtn" class="btn-submit" onclick="submitQuiz()" style="display: none;">Submit Quiz</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Results View -->
+      <section class="results-view" id="resultsView" style="display: none;">
+        <div class="results-container">
+          <div class="results-header">
+            <h2>Quiz Complete!</h2>
+            <div id="resultMessage" class="result-message"></div>
+          </div>
+
+          <div class="score-display">
+            <div class="score-card">
+              <span class="score-label">Your Score</span>
+              <span class="score-value" id="finalScore">0%</span>
+              <span class="score-status" id="scoreStatus">-</span>
+            </div>
+
+            <div class="score-details">
+              <div class="detail-item">
+                <span class="detail-label">Correct Answers</span>
+                <span class="detail-value" id="correctCount">0</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Total Questions</span>
+                <span class="detail-value" id="totalCount">0</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Time Taken</span>
+                <span class="detail-value" id="timeTaken">0 min</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="results-breakdown" id="resultsBreakdown">
+            <!-- Detailed results will be shown here -->
+          </div>
+
+          <div class="results-actions">
+            <button class="btn-primary" onclick="retakeQuiz()">🔄 Retake Quiz</button>
+            <a href="Lobby.html" class="btn-secondary">🏠 Return to Lobby</a>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer class="lobby-footer" style="margin-top:48px;text-align:center;padding-bottom:28px;">
+      <small>Need help? <a href="Questions.html">Contact us</a></small>
+    </footer>
+  </main>
+
+  <script>
+    // Sample quiz data
+    const quizzesData = [
+      {
+        id: 1,
+        title: "Module 1: Fundamentals Quiz",
+        description: "Test your understanding of basic stock market concepts",
+        courseModule: "Module 1: Getting Started",
+        difficulty: "beginner",
+        questions: 10,
+        timeLimit: 15,
+        passingScore: 70,
+        completed: false,
+        bestScore: null,
+        attempts: 0
+      },
+      {
+        id: 2,
+        title: "Module 2: Stock Basics Quiz",
+        description: "Assess your knowledge of stocks and trading",
+        courseModule: "Module 2: Stock Basics",
+        difficulty: "beginner",
+        questions: 12,
+        timeLimit: 20,
+        passingScore: 70,
+        completed: false,
+        bestScore: null,
+        attempts: 0
+      },
+      {
+        id: 3,
+        title: "Mid-Course Assessment",
+        description: "Comprehensive assessment of the first half of the course",
+        courseModule: "Mid-Course",
+        difficulty: "intermediate",
+        questions: 25,
+        timeLimit: 45,
+        passingScore: 75,
+        completed: true,
+        bestScore: 82,
+        attempts: 1
+      },
+      {
+        id: 4,
+        title: "Advanced Portfolio Management Quiz",
+        description: "Test advanced concepts in portfolio construction",
+        courseModule: "Module 5: Advanced Topics",
+        difficulty: "advanced",
+        questions: 15,
+        timeLimit: 25,
+        passingScore: 80,
+        completed: false,
+        bestScore: null,
+        attempts: 0
+      }
+    ];
+
+    // Detailed questions for the quiz being taken
+    const detailedQuestions = [
+      {
+        id: 1,
+        text: "What is a stock?",
+        type: "multiple-choice",
+        options: [
+          "A type of investment representing ownership in a company",
+          "A bond issued by a government",
+          "A real estate property",
+          "A type of insurance policy"
+        ],
+        correctAnswer: 0
+      },
+      {
+        id: 2,
+        text: "What does NYSE stand for?",
+        type: "multiple-choice",
+        options: [
+          "National Year Stock Exchange",
+          "New York Stock Exchange",
+          "National Yield Securities Exchange",
+          "New York Securities Exchange"
+        ],
+        correctAnswer: 1
+      },
+      {
+        id: 3,
+        text: "True or False: Diversification reduces investment risk.",
+        type: "true-false",
+        options: ["True", "False"],
+        correctAnswer: 0
+      },
+      {
+        id: 4,
+        text: "What is the P/E ratio?",
+        type: "multiple-choice",
+        options: [
+          "Price to Equity ratio",
+          "Price to Earnings ratio",
+          "Profit to Expense ratio",
+          "Price to Expansion ratio"
+        ],
+        correctAnswer: 1
+      },
+      {
+        id: 5,
+        text: "Which of the following is NOT a stock market index?",
+        type: "multiple-choice",
+        options: [
+          "S&P 500",
+          "NASDAQ",
+          "Federal Reserve",
+          "Dow Jones Industrial Average"
+        ],
+        correctAnswer: 2
+      }
+    ];
+
+    let currentQuizId = null;
+    let currentQuestionIndex = 0;
+    let userAnswers = [];
+    let quizStartTime = null;
+    let timeRemaining = 0;
+    let timerInterval = null;
+
+    // Initialize page
+    function initializePage() {
+      displayAssessments();
+    }
+
+    // Display assessments list
+    function displayAssessments() {
+      const grid = document.getElementById('assessmentsGrid');
+      grid.innerHTML = quizzesData.map(quiz => `
+        <div class="assessment-card">
+          <div class="assessment-header">
+            <h3>${quiz.title}</h3>
+            <span class="difficulty-badge difficulty-${quiz.difficulty}">${quiz.difficulty}</span>
+          </div>
+
+          <p class="assessment-description">${quiz.description}</p>
+
+          <div class="assessment-meta">
+            <span class="meta-item">📝 ${quiz.questions} questions</span>
+            <span class="meta-item">⏱️ ${quiz.timeLimit} min</span>
+            <span class="meta-item">✅ ${quiz.passingScore}% to pass</span>
+          </div>
+
+          ${quiz.completed ? `
+            <div class="assessment-status">
+              <span class="status-badge completed">✓ Completed</span>
+              <span class="score-info">Best score: ${quiz.bestScore}%</span>
+            </div>
+          ` : ''}
+
+          <div class="assessment-actions">
+            ${quiz.completed ? `
+              <button class="btn-primary" onclick="startQuiz(${quiz.id})">Retake</button>
+            ` : `
+              <button class="btn-primary" onclick="startQuiz(${quiz.id})">Start Quiz</button>
+            `}
+            <button class="btn-secondary" onclick="viewDetails(${quiz.id})">View Details</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Start a quiz
+    function startQuiz(quizId) {
+      currentQuizId = quizId;
+      currentQuestionIndex = 0;
+      userAnswers = new Array(detailedQuestions.length).fill(null);
+      quizStartTime = Date.now();
+      timeRemaining = 60 * 15; // 15 minutes in seconds
+
+      document.getElementById('quizListView').style.display = 'none';
+      document.getElementById('resultsView').style.display = 'none';
+      document.getElementById('quizTakingView').style.display = 'block';
+
+      const quiz = quizzesData.find(q => q.id === quizId);
+      document.getElementById('quizTitle').textContent = quiz.title;
+
+      startTimer();
+      loadQuestion(0);
+    }
+
+    // Start countdown timer
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        timeRemaining--;
+        
+        const minutes = Math.floor(timeRemaining / 60);
+        const seconds = timeRemaining % 60;
+        document.getElementById('timeRemaining').textContent = 
+          `Time remaining: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+        if (timeRemaining <= 0) {
+          clearInterval(timerInterval);
+          submitQuiz();
+        }
+      }, 1000);
+    }
+
+    // Load a question
+    function loadQuestion(index) {
+      if (index < 0 || index >= detailedQuestions.length) return;
+
+      currentQuestionIndex = index;
+      const question = detailedQuestions[index];
+
+      // Update progress
+      const progress = ((index + 1) / detailedQuestions.length) * 100;
+      document.getElementById('quizProgressFill').style.width = progress + '%';
+      document.getElementById('questionCount').textContent = `Question ${index + 1} of ${detailedQuestions.length}`;
+
+      // Render question
+      const container = document.getElementById('questionContainer');
+      container.innerHTML = `
+        <div class="question">
+          <h3 class="question-text">${question.text}</h3>
+          <div class="options-container">
+            ${question.options.map((option, i) => `
+              <label class="option">
+                <input 
+                  type="radio" 
+                  name="answer" 
+                  value="${i}"
+                  ${userAnswers[index] === i ? 'checked' : ''}
+                  onchange="selectAnswer(${i})"
+                >
+                <span class="option-text">${option}</span>
+              </label>
+            `).join('')}
+          </div>
+        </div>
+      `;
+
+      // Update navigation
+      document.getElementById('prevQuestionBtn').disabled = index === 0;
+      document.getElementById('nextQuestionBtn').style.display = index < detailedQuestions.length - 1 ? 'block' : 'none';
+      document.getElementById('submitBtn').style.display = index === detailedQuestions.length - 1 ? 'block' : 'none';
+    }
+
+    // Select an answer
+    function selectAnswer(answerIndex) {
+      userAnswers[currentQuestionIndex] = answerIndex;
+    }
+
+    // Navigate questions
+    function previousQuestion() {
+      if (currentQuestionIndex > 0) {
+        loadQuestion(currentQuestionIndex - 1);
+      }
+    }
+
+    function nextQuestion() {
+      if (userAnswers[currentQuestionIndex] === null) {
+        alert('Please select an answer before proceeding.');
+        return;
+      }
+      if (currentQuestionIndex < detailedQuestions.length - 1) {
+        loadQuestion(currentQuestionIndex + 1);
+      }
+    }
+
+    // Submit quiz
+    function submitQuiz() {
+      clearInterval(timerInterval);
+
+      // Check if all questions answered
+      if (userAnswers.includes(null)) {
+        alert('Please answer all questions before submitting.');
+        return;
+      }
+
+      // Calculate score
+      let correctCount = 0;
+      detailedQuestions.forEach((q, i) => {
+        if (userAnswers[i] === q.correctAnswer) {
+          correctCount++;
+        }
+      });
+
+      const score = Math.round((correctCount / detailedQuestions.length) * 100);
+      const timeTaken = Math.round((Date.now() - quizStartTime) / 60000);
+
+      // Show results
+      showResults(score, correctCount, timeTaken);
+    }
+
+    // Show results
+    function showResults(score, correctCount, timeTaken) {
+      const quiz = quizzesData.find(q => q.id === currentQuizId);
+      const passed = score >= quiz.passingScore;
+
+      document.getElementById('quizTakingView').style.display = 'none';
+      document.getElementById('resultsView').style.display = 'block';
+
+      document.getElementById('finalScore').textContent = score + '%';
+      document.getElementById('scoreStatus').textContent = passed ? '✓ Passed' : '✗ Failed';
+      document.getElementById('scoreStatus').style.color = passed ? '#4CAF50' : '#F44336';
+      document.getElementById('correctCount').textContent = correctCount;
+      document.getElementById('totalCount').textContent = detailedQuestions.length;
+      document.getElementById('timeTaken').textContent = timeTaken + ' min';
+      document.getElementById('resultMessage').textContent = 
+        passed ? 
+        'Congratulations! You passed the quiz! 🎉' : 
+        `You scored ${score}%. Keep studying and try again!`;
+
+      // Show detailed breakdown
+      const breakdown = document.getElementById('resultsBreakdown');
+      breakdown.innerHTML = '<h3 style="margin-bottom: 16px; color: var(--color-1);">Question Review</h3>' + 
+        detailedQuestions.map((q, i) => {
+          const isCorrect = userAnswers[i] === q.correctAnswer;
+          return `
+            <div class="result-item ${isCorrect ? 'correct' : 'incorrect'}">
+              <div class="result-question">
+                <span class="result-icon">${isCorrect ? '✓' : '✗'}</span>
+                <span>${q.text}</span>
+              </div>
+              <div class="result-details">
+                <p><strong>Your answer:</strong> ${q.options[userAnswers[i]]}</p>
+                ${!isCorrect ? `<p><strong>Correct answer:</strong> ${q.options[q.correctAnswer]}</p>` : ''}
+              </div>
+            </div>
+          `;
+        }).join('');
+    }
+
+    // Retake quiz
+    function retakeQuiz() {
+      startQuiz(currentQuizId);
+    }
+
+    // Exit quiz
+    function exitQuiz() {
+      clearInterval(timerInterval);
+      document.getElementById('quizTakingView').style.display = 'none';
+      document.getElementById('quizListView').style.display = 'block';
+    }
+
+    // View details
+    function viewDetails(quizId) {
+      alert('Quiz details would be shown here.');
+    }
+
+    function goToAccount(event) {
+      event.preventDefault();
+      const userId = localStorage.getItem('userId');
+      if (userId) {
+        window.location.href = 'Account.html';
+      } else {
+        window.location.href = 'Login.html';
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', initializePage);
+  </script>
+</body>
+</html>

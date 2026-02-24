@@ -1,0 +1,162 @@
+/* Shared styles across all pages */
+
+/* Typography & Base Styles */
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  background: var(--color-5);
+  color: var(--color-1);
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  color: var(--color-1);
+  font-weight: 600;
+}
+
+h1 { font-size: 28px; }
+h2 { font-size: 18px; margin: 20px 0 8px; color: var(--color-2); }
+h3 { font-size: 16px; margin: 14px 0 6px; color: var(--color-2); }
+
+p {
+  color: var(--muted-text);
+  margin: 0 0 16px;
+}
+
+ul, ol {
+  margin: 8px 0 12px;
+  padding-left: 20px;
+}
+
+li {
+  margin-bottom: 6px;
+}
+
+a {
+  color: var(--color-2);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--color-1);
+}
+
+/* Form Elements */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+select,
+textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--color-1);
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--color-2);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+button,
+[type="submit"],
+[type="button"] {
+  background: var(--color-2);
+  color: #06202b;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+button:hover,
+[type="submit"]:hover,
+[type="button"]:hover {
+  background: var(--color-1);
+}
+
+/* Utility Classes */
+.cta {
+  display: inline-block;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--color-2);
+  color: #06202b;
+  font-weight: 600;
+  margin-top: 12px;
+  transition: all 0.2s ease;
+}
+
+.cta:hover {
+  background: var(--color-1);
+  transform: translateY(-2px);
+}
+
+.container {
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 28px 32px;
+  box-sizing: border-box;
+}
+
+.card {
+  background: transparent;
+  max-width: 460px;
+  padding: 28px;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.error {
+  color: var(--danger);
+  font-size: 13px;
+  margin-top: 6px;
+  display: none;
+}
+
+.success {
+  color: var(--color-3);
+  font-size: 14px;
+  margin-top: 8px;
+  display: none;
+}
+
+/* Responsive Design */
+@media (max-width: 520px) {
+  body {
+    padding: 18px;
+  }
+
+  .container {
+    padding: 20px;
+  }
+
+  .card {
+    padding: 18px;
+  }
+
+  h1 {
+    font-size: 22px;
+  }
+
+  h2 {
+    font-size: 16px;
+  }
+}

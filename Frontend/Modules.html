@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Course Modules - Seeds of Wealth</title>
+  <link rel="stylesheet" href="Colors.css">
+  <link rel="stylesheet" href="shared.css">
+  <link rel="stylesheet" href="modules.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="Lobby.html">Seeds of Wealth</a>
+      <nav class="header-nav">
+        <a class="nav-link" href="Lobby.html">Lobby</a>
+        <a class="nav-link" href="Introduction to course.html">Info</a>
+      </nav>
+      <div class="header-actions">
+        <a class="nav-link" href="Login.html">Account</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Page Header -->
+    <section class="page-header" aria-label="Page header">
+      <h1>Course Modules</h1>
+      <p>Complete modules in sequence to master investing fundamentals</p>
+    </section>
+
+    <!-- Course Progress Summary -->
+    <section class="progress-summary">
+      <div class="summary-card">
+        <h3>Overall Progress</h3>
+        <div class="progress-stat">
+          <div class="progress-circle">
+            <svg class="progress-ring" width="120" height="120">
+              <circle cx="60" cy="60" r="54" stroke-dasharray="339.29" stroke-dashoffset="33.929"></circle>
+            </svg>
+            <span class="progress-percentage">65%</span>
+          </div>
+          <div class="progress-info">
+            <p class="info-value">13 of 20</p>
+            <p class="info-label">Lessons Complete</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="summary-card">
+        <h3>Modules Completed</h3>
+        <div class="stat-display">
+          <p class="stat-value">2 of 6</p>
+          <p class="stat-label">Modules</p>
+        </div>
+      </div>
+
+      <div class="summary-card">
+        <h3>Current Streak</h3>
+        <div class="stat-display">
+          <p class="stat-value">7 Days</p>
+          <p class="stat-label">Keep it up!</p>
+        </div>
+      </div>
+
+      <div class="summary-card">
+        <h3>Estimated Time</h3>
+        <div class="stat-display">
+          <p class="stat-value">4 weeks</p>
+          <p class="stat-label">Remaining</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Modules List -->
+    <section class="modules-list" id="modulesList" aria-label="Course modules">
+      <!-- Modules will be loaded here -->
+    </section>
+
+    <footer class="lobby-footer" style="margin-top:48px;text-align:center;padding-bottom:28px;">
+      <small>Need help? <a href="Questions.html">Contact us</a></small>
+    </footer>
+  </main>
+
+  <script>
+    // Module data
+    const modulesData = [
+      {
+        id: 1,
+        title: "Module 1: Getting Started",
+        description: "Learn the basics of stock markets and investment fundamentals",
+        progress: 100,
+        lessons: [
+          { title: "Introduction to Stock Markets", duration: "12 min", completed: true },
+          { title: "Understanding Stock Exchanges", duration: "15 min", completed: true }
+        ],
+        status: "completed"
+      },
+      {
+        id: 2,
+        title: "Module 2: Stock Basics",
+        description: "Understand stocks, shares, and how to read market data",
+        progress: 30,
+        lessons: [
+          { title: "What is a Stock?", duration: "18 min", completed: false },
+          { title: "Reading Stock Charts", duration: "20 min", completed: false },
+          { title: "Stock Valuation Methods", duration: "25 min", completed: false }
+        ],
+        status: "in-progress"
+      },
+      {
+        id: 3,
+        title: "Module 3: Risk Management",
+        description: "Learn about diversification, hedging, and managing portfolio risk",
+        progress: 0,
+        lessons: [
+          { title: "Understanding Risk", duration: "16 min", completed: false },
+          { title: "Diversification Strategies", duration: "22 min", completed: false },
+          { title: "Portfolio Balance", duration: "18 min", completed: false }
+        ],
+        status: "locked"
+      },
+      {
+        id: 4,
+        title: "Module 4: Market Analysis",
+        description: "Master fundamental and technical analysis techniques",
+        progress: 0,
+        lessons: [
+          { title: "Fundamental Analysis", duration: "28 min", completed: false },
+          { title: "Technical Analysis Basics", duration: "24 min", completed: false },
+          { title: "Reading Financial Statements", duration: "30 min", completed: false }
+        ],
+        status: "locked"
+      },
+      {
+        id: 5,
+        title: "Module 5: Trading Strategies",
+        description: "Explore different trading strategies and when to use them",
+        progress: 0,
+        lessons: [
+          { title: "Long-Term Investing", duration: "20 min", completed: false },
+          { title: "Day Trading Basics", duration: "18 min", completed: false },
+          { title: "Swing Trading", duration: "22 min", completed: false }
+        ],
+        status: "locked"
+      },
+      {
+        id: 6,
+        title: "Module 6: Advanced Topics",
+        description: "Learn about options, futures, and advanced investment vehicles",
+        progress: 0,
+        lessons: [
+          { title: "Understanding Options", duration: "26 min", completed: false },
+          { title: "Futures Trading", duration: "25 min", completed: false },
+          { title: "Cryptocurrency Basics", duration: "20 min", completed: false }
+        ],
+        status: "locked"
+      }
+    ];
+
+    // Initialize page
+    function initializePage() {
+      displayModules();
+    }
+
+    // Display modules
+    function displayModules() {
+      const container = document.getElementById('modulesList');
+      container.innerHTML = modulesData.map((module, index) => `
+        <div class="module-card module-${module.status}">
+          <div class="module-header">
+            <div class="module-info">
+              <h2>${module.title}</h2>
+              <p class="module-description">${module.description}</p>
+            </div>
+            <div class="module-badge">
+              <span class="badge-${module.status}">${formatStatus(module.status)}</span>
+            </div>
+          </div>
+
+          <div class="module-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: ${module.progress}%;"></div>
+            </div>
+            <span class="progress-text">${module.progress}% Complete</span>
+          </div>
+
+          <div class="module-lessons">
+            <h3>Lessons in this module</h3>
+            <ul class="lessons-list">
+              ${module.lessons.map(lesson => `
+                <li class="lesson-item ${lesson.completed ? 'completed' : ''}">
+                  <span class="lesson-status">${lesson.completed ? '✓' : '○'}</span>
+                  <span class="lesson-info">
+                    <span class="lesson-name">${lesson.title}</span>
+                    <span class="lesson-duration">${lesson.duration}</span>
+                  </span>
+                </li>
+              `).join('')}
+            </ul>
+          </div>
+
+          <div class="module-actions">
+            ${module.status === 'locked' ? `
+              <button class="btn-locked" disabled>🔒 Locked - Complete Previous Module</button>
+            ` : module.status === 'completed' ? `
+              <a href="Courses.html" class="btn-secondary">📖 Review Module</a>
+              <button class="btn-quiz">🧪 Retake Quiz</button>
+            ` : `
+              <a href="Courses.html" class="btn-primary">Continue Learning</a>
+              <a href="Assessments.html" class="btn-secondary">📝 Take Quiz</a>
+            `}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Format status text
+    function formatStatus(status) {
+      const statusMap = {
+        'completed': '✓ Completed',
+        'in-progress': '⏳ In Progress',
+        'locked': '🔒 Locked'
+      };
+      return statusMap[status] || status;
+    }
+
+    function goToAccount(event) {
+      event.preventDefault();
+      const userId = localStorage.getItem('userId');
+      if (userId) {
+        window.location.href = 'Account.html';
+      } else {
+        window.location.href = 'Login.html';
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', initializePage);
+  </script>
+</body>
+</html>

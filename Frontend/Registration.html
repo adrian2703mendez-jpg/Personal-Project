@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="description" content="Sign up for Seeds of Wealth and start your investing journey." />
+	<title>Sign Up - Seeds of Wealth</title>
+	<link rel="stylesheet" href="Colors.css" />
+	<link rel="stylesheet" href="shared.css" />
+	<link rel="stylesheet" href="registration.css" />
+</head>
+<body>
+	<main class="card" role="main">
+		<h1>Create an account</h1>
+		<p class="lead">Sign up to access the app. It's quick and easy.</p>
+
+		<form id="signupForm" novalidate>
+			<div>
+				<label for="fullname">Full name</label>
+				<input id="fullname" name="fullname" type="text" placeholder="Jane Doe" required />
+				<div class="error" id="fullnameError">Please enter your full name.</div>
+			</div>
+
+			<div>
+				<label for="email">Email</label>
+				<input id="email" name="email" type="email" placeholder="you@example.com" required />
+				<div class="error" id="emailError">Please enter a valid email address.</div>
+			</div>
+
+			<div class="row">
+				<div>
+					<label for="password">Password</label>
+					<input id="password" name="password" type="password" minlength="8" placeholder="At least 8 characters" required />
+					<div class="error" id="passwordError">Password must be at least 8 characters.</div>
+				</div>
+				<div>
+					<label for="confirm">Confirm password</label>
+					<input id="confirm" name="confirm" type="password" required />
+					<div class="error" id="confirmError">Passwords do not match.</div>
+				</div>
+			</div>
+
+			<div>
+				<label for="phone">Phone (optional)</label>
+				<input id="phone" name="phone" type="tel" placeholder="+1 555 555 5555" />
+			</div>
+
+			<div class="terms">
+				<input id="terms" type="checkbox" />
+				<label for="terms">I agree to the <a href="#">terms and privacy policy</a></label>
+			</div>
+			<div class="error" id="termsError">You must agree to the terms.</div>
+
+			<div class="actions">
+				<small class="muted">Already have an account? <a href="Login.html">Log in</a></small>
+				<button id="submitBtn" type="submit">Create account</button>
+			</div>
+
+			<div class="success" id="successMsg">Account created (client-side). Implement server integration to complete sign-up.</div>
+		</form>
+	</main>
+
+	<script>
+		const form = document.getElementById('signupForm');
+		const fullname = document.getElementById('fullname');
+		const email = document.getElementById('email');
+		const password = document.getElementById('password');
+		const confirm = document.getElementById('confirm');
+		const terms = document.getElementById('terms');
+
+		const fullnameError = document.getElementById('fullnameError');
+		const emailError = document.getElementById('emailError');
+		const passwordError = document.getElementById('passwordError');
+		const confirmError = document.getElementById('confirmError');
+		const termsError = document.getElementById('termsError');
+		const successMsg = document.getElementById('successMsg');
+
+		function show(el){ el.style.display = 'block' }
+		function hide(el){ el.style.display = 'none' }
+
+		function isEmailValid(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) }
+
+		function validate(){
+			let ok = true;
+			if(!fullname.value.trim()){ show(fullnameError); ok = false } else hide(fullnameError);
+			if(!isEmailValid(email.value.trim())){ show(emailError); ok = false } else hide(emailError);
+			if(!password.value || password.value.length < 8){ show(passwordError); ok = false } else hide(passwordError);
+			if(confirm.value !== password.value){ show(confirmError); ok = false } else hide(confirmError);
+			if(!terms.checked){ show(termsError); ok = false } else hide(termsError);
+			return ok;
+		}
+
+		form.addEventListener('submit', async (e)=>{
+			e.preventDefault();
+			successMsg.style.display = 'none';
+			if(validate()){
+				try {
+					const response = await fetch('http://localhost:5000/api/register', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({
+							fullname: fullname.value.trim(),
+							email: email.value.trim(),
+							password: password.value,
+							phone: phone.value.trim()
+						})
+					});
+
+					const data = await response.json();
+
+					if (data.success) {
+						successMsg.textContent = 'Account created successfully — redirecting to login...';
+						show(successMsg);
+						form.reset();
+						localStorage.setItem('userId', data.userId);
+						setTimeout(()=> window.location.href = 'Login.html', 1200);
+					} else {
+						successMsg.textContent = '❌ ' + data.message;
+						successMsg.style.color = 'var(--danger)';
+						show(successMsg);
+					}
+				} catch (error) {
+					successMsg.textContent = '❌ Connection error. Make sure the backend is running on http://localhost:5000';
+					successMsg.style.color = 'var(--danger)';
+					show(successMsg);
+				}
+			}
+		});
+
+		// Live validation feedback
+		[fullname,email,password,confirm,terms].forEach(el=>{
+			el.addEventListener('input', ()=>{ validate() })
+			el.addEventListener('change', ()=>{ validate() })
+		})
+	</script>
+</body>
+</html>

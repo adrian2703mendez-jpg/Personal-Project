@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Course Lobby</title>
+  <link rel="stylesheet" href="Colors.css">
+  <link rel="stylesheet" href="shared.css">
+  <link rel="stylesheet" href="lobby.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="Lobby.html">Seeds of Wealth</a>
+      <nav class="header-nav">
+        <a class="nav-link" href="Lobby.html">Home</a>
+        <a class="nav-link" href="Lobby.html">Lobby</a>
+        <a class="nav-link" href="Introduction to course.html">Info</a>
+      </nav>
+      <div class="header-actions">
+        <a class="nav-link" id="accountBtn" href="#" onclick="goToAccount(event)">Account</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Main Dashboard Section -->
+    <section class="dashboard-container" aria-label="Course Dashboard">
+      <!-- Left Sidebar Actions -->
+      <aside class="dashboard-sidebar sidebar-left">
+        <a class="card lobby-btn" href="Courses.html" data-tooltip="Continue your current lessons or browse the course catalog; recommended next lesson is highlighted on the course home.">📚 Classes</a>
+        <a class="card lobby-btn" href="Questions.html" data-tooltip="Ask the instructor, browse FAQs, or view community answers and discussion threads.">❓ Questions</a>
+        <a class="card lobby-btn" href="Progress.html" data-tooltip="View your completed lessons, progress percentage, badges, and suggested next steps.">📈 Progress</a>
+        <a class="card lobby-btn" href="Assessments.html" data-tooltip="Engage with hands-on exercises, coding challenges, and practice problems.">🎯 Activities & Practice</a>
+        <a class="card lobby-btn" href="Resources.html" data-tooltip="Access downloadable guides, references, templates, and external learning materials.">📖 Resources</a>
+      </aside>
+
+      <!-- Central Dashboard -->
+      <section class="course-dashboard">
+        <div class="card dashboard-header">
+          <h2>Your Course Dashboard</h2>
+          <p>Welcome back! Here's your learning overview.</p>
+        </div>
+
+        <!-- Enrolled Courses Section -->
+        <div class="card enrolled-courses">
+          <h3>Enrolled Courses</h3>
+          <div class="course-list" id="courseList">
+            <div class="course-card">
+              <h4>Investing Fundamentals</h4>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 65%;"></div>
+              </div>
+              <p class="progress-text">65% Complete</p>
+              <a href="#course-details" class="btn-secondary">Continue Learning</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recommended Next Steps -->
+        <div class="card recommended-next">
+          <h3>Recommended Next Steps</h3>
+          <ul class="next-steps-list">
+            <li>Complete Module 4: Portfolio Management</li>
+            <li>Take the Mid-Course Assessment</li>
+            <li>Review Case Study: Market Analysis</li>
+          </ul>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="card recent-activity">
+          <h3>Recent Activity</h3>
+          <ul class="activity-list">
+            <li><span class="activity-date">Today</span> - Completed Lesson: Risk Assessment</li>
+            <li><span class="activity-date">Yesterday</span> - Scored 92% on Quiz: Diversification</li>
+            <li><span class="activity-date">Jan 25</span> - Earned Badge: Stock Market Basics</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Right Sidebar Actions -->
+      <aside class="dashboard-sidebar sidebar-right">
+        <a class="card lobby-btn" href="Assessments.html" data-tooltip="Take quizzes, tests, and evaluations to check your understanding and progress.">✅ Assessments & Progress Checks</a>
+        <a class="card lobby-btn" href="Schedule.html" data-tooltip="View course timeline, deadlines, milestones, and important dates.">📅 Schedule</a>
+        <a class="card lobby-btn" href="Progress.html" data-tooltip="Get personalized recommendations and track areas for improvement.">💬 Feedback & Improvement</a>
+        <a class="card lobby-btn" href="Modules.html" data-tooltip="Browse and organize all course modules and lesson units.">📦 Modules</a>
+        <a class="card lobby-btn" href="Ethics.html" data-tooltip="Learn ethical principles, conduct standards, and responsible practices in this field.">⚖️ Ethics</a>
+      </aside>
+    </section>
+
+    <footer class="lobby-footer" style="margin-top:28px;text-align:center;padding-bottom:28px;">
+      <small>Need help? Contact your instructor.</small>
+    </footer>
+  </main>
+
+  <script>
+    function goToAccount(event) {
+      event.preventDefault();
+      const userId = localStorage.getItem('userId');
+      if (userId) {
+        window.location.href = 'Account.html';
+      } else {
+        window.location.href = 'Login.html';
+      }
+    }
+  </script>
+</body>
+</html>

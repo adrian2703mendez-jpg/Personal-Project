@@ -1,0 +1,411 @@
+/* Lobby styles adapted to site theme (uses Colors.css + shared.css variables) */
+
+.lobby-grid{
+	display:grid;
+	grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+	gap:18px;
+	padding:18px 0 0 0;
+	max-width:1100px;
+	margin:0 auto;
+}
+
+.lobby-grid .card{
+	display:block;
+	background:var(--card);
+	padding:20px;
+	border-radius:12px;
+	text-decoration:none;
+	color:var(--color-1);
+	box-shadow:0 8px 24px rgba(4,12,20,0.25);
+	transition:transform .14s ease, box-shadow .14s ease;
+	border:1px solid rgba(255,255,255,0.03);
+}
+
+.lobby-grid .card:hover{transform:translateY(-6px);box-shadow:0 18px 38px rgba(4,12,20,0.36)}
+
+.card-title{font-size:16px;font-weight:700;margin-bottom:8px;color:var(--color-1)}
+.card-desc{font-size:13px;color:var(--muted-text)}
+
+.lobby-footer{color:var(--muted-text)}
+
+@media (max-width:520px){
+	.lobby-grid{padding:12px;gap:12px}
+	.card{padding:16px}
+}
+
+/* Layout for strategic card placement */
+.lobby-layout{
+	display:grid;
+	grid-template-columns: 1fr 360px;
+	gap:24px;
+	max-width:1100px;
+	margin:0 auto;
+	padding-top:12px;
+}
+
+.primary-card{
+	background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+	padding:28px;
+	border-radius:14px;
+	box-shadow:0 20px 40px rgba(4,12,20,0.4);
+}
+
+.primary-card .card-title{font-size:20px}
+.primary-card .card-desc{font-size:14px;margin-top:8px;color:var(--muted-text)}
+
+.secondary-grid{
+	display:grid;
+	grid-template-columns:1fr 1fr;
+	gap:12px;
+}
+
+/* Make primary column full width on small screens */
+@media (max-width:720px){
+	.lobby-layout{grid-template-columns:1fr; padding:0 12px}
+	.secondary-grid{grid-template-columns:1fr 1fr}
+}
+
+/* Header styling to match site */
+.site-header{
+	border-bottom:1px solid rgba(255,255,255,0.03);
+	background:transparent;
+}
+.site-header .header-inner{
+	display:flex;
+	align-items:center;
+	justify-content:space-between;
+	gap:12px;
+	padding:12px 0;
+}
+.brand{
+	color:var(--color-1);
+	font-weight:800;
+	font-size:18px;
+	text-decoration:none;
+}
+.header-nav{display:flex;gap:10px;align-items:center}
+.header-nav .nav-link{padding:8px 10px;border-radius:8px;background:transparent;border:1px solid transparent}
+.header-nav .nav-link:hover{background:rgba(58,163,255,0.06);border-color:rgba(58,163,255,0.12)}
+.header-actions{display:flex;align-items:center;gap:8px}
+
+@media (max-width:520px){
+	.site-header .header-inner{flex-direction:column;align-items:flex-start}
+	.header-nav{width:100%;justify-content:flex-start;flex-wrap:wrap}
+	.header-actions{width:100%;justify-content:flex-start}
+}
+
+	/* Accessibility helper: visually hide while keeping available to screen readers */
+	.sr-only{
+		position: absolute !important;
+		height: 1px; width: 1px;
+		overflow: hidden;
+		clip: rect(1px, 1px, 1px, 1px);
+		white-space: nowrap; /* added line */
+	}
+
+	/* Tooltip styles for lobby cards */
+	.card{position:relative}
+	.card::after{
+		content: attr(data-tooltip);
+		display:block;
+		position:absolute;
+		left:50%;
+		transform:translateX(-50%);
+		bottom: calc(100% + 12px);
+		background: rgba(6,32,43,0.95);
+		color: var(--color-1);
+		padding:8px 10px;
+		border-radius:8px;
+		font-size:13px;
+		white-space:nowrap;
+		opacity:0;
+		pointer-events:none;
+		transition:opacity .12s ease, transform .12s ease;
+		z-index:60;
+	}
+	.card::before{
+		content:"";
+		position:absolute;
+		left:50%;
+		transform:translateX(-50%);
+		bottom: calc(100% + 6px);
+		width:10px; height:10px;
+		background: rgba(6,32,43,0.95);
+		transform-origin:center;
+		transform: translateX(-50%) rotate(45deg) scale(.9);
+		border-radius:2px;
+		opacity:0;
+		pointer-events:none;
+		z-index:59;
+	}
+	.card:hover::after,
+	.card:focus-within::after,
+	.card:hover::before,
+	.card:focus-within::before{
+		opacity:1;
+		transform:translateX(-50%) translateY(0);
+	}
+
+	/* Keep tooltip behavior touch-friendly: hide on small screens (touch) */
+	@media (max-width:520px){
+		.card::after, .card::before{display:none}
+	}
+
+/* Dashboard Container - Three Column Layout */
+.dashboard-container{
+  display:grid;
+  grid-template-columns:200px 1fr 200px;
+  gap:16px;
+  max-width:1400px;
+  margin:18px auto 6px;
+  align-items:start;
+}
+
+/* Sidebars for action buttons */
+.dashboard-sidebar{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+/* Course Dashboard Main Content */
+.course-dashboard{
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+}
+
+.dashboard-header{
+  text-align:center;
+  padding:24px;
+  background:linear-gradient(180deg, rgba(58,163,255,0.06), rgba(58,163,255,0.02));
+}
+
+.dashboard-header h2{
+  font-size:24px;
+  margin-bottom:8px;
+  color:var(--color-1);
+}
+
+.dashboard-header p{
+  color:var(--muted-text);
+}
+
+/* Enrolled Courses */
+.enrolled-courses{
+  padding:20px;
+}
+
+.enrolled-courses h3{
+  font-size:18px;
+  margin-bottom:16px;
+  color:var(--color-1);
+}
+
+.course-list{
+  display:grid;
+  gap:12px;
+}
+
+.course-card{
+  padding:16px;
+  background:rgba(255,255,255,0.01);
+  border:1px solid rgba(255,255,255,0.05);
+  border-radius:8px;
+}
+
+.course-card h4{
+  font-size:16px;
+  margin-bottom:12px;
+  color:var(--color-1);
+}
+
+.progress-bar{
+  height:8px;
+  background:rgba(255,255,255,0.05);
+  border-radius:4px;
+  overflow:hidden;
+  margin-bottom:8px;
+}
+
+.progress-fill{
+  height:100%;
+  background:linear-gradient(90deg, #3aa3ff, #5ab1ff);
+  border-radius:4px;
+  transition:width 0.3s ease;
+}
+
+.progress-text{
+  font-size:12px;
+  color:var(--muted-text);
+  margin-bottom:12px;
+}
+
+.btn-secondary{
+  display:inline-block;
+  padding:8px 14px;
+  background:rgba(58,163,255,0.12);
+  border:1px solid rgba(58,163,255,0.25);
+  border-radius:6px;
+  color:var(--color-1);
+  text-decoration:none;
+  font-size:13px;
+  font-weight:600;
+  transition:all 0.2s ease;
+}
+
+.btn-secondary:hover{
+  background:rgba(58,163,255,0.2);
+  border-color:rgba(58,163,255,0.4);
+}
+
+/* Recommended Next Steps */
+.recommended-next{
+  padding:20px;
+}
+
+.recommended-next h3{
+  font-size:18px;
+  margin-bottom:12px;
+  color:var(--color-1);
+}
+
+.next-steps-list{
+  list-style:none;
+  padding:0;
+  margin:0;
+}
+
+.next-steps-list li{
+  padding:10px 0;
+  color:var(--color-1);
+  font-size:14px;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+}
+
+.next-steps-list li:last-child{
+  border-bottom:none;
+}
+
+/* Recent Activity */
+.recent-activity{
+  padding:20px;
+}
+
+.recent-activity h3{
+  font-size:18px;
+  margin-bottom:12px;
+  color:var(--color-1);
+}
+
+.activity-list{
+  list-style:none;
+  padding:0;
+  margin:0;
+}
+
+.activity-list li{
+  padding:10px 0;
+  color:var(--color-1);
+  font-size:14px;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+}
+
+.activity-list li:last-child{
+  border-bottom:none;
+}
+
+.activity-date{
+  color:var(--muted-text);
+  font-size:12px;
+  display:block;
+  margin-bottom:4px;
+}
+
+/* Lobby Buttons */
+.lobby-btn{
+  padding:14px 12px;
+  text-align:center;
+  font-weight:700;
+  font-size:13px;
+  border-radius:10px;
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:56px;
+  flex-wrap:wrap;
+  transition:all 0.2s ease;
+}
+
+.lobby-btn:hover{transform:translateY(-4px)}
+
+/* Responsive Design */
+@media (max-width:1100px){
+  .dashboard-container{
+    grid-template-columns:150px 1fr 150px;
+    gap:12px;
+  }
+}
+
+@media (max-width:920px){
+  .dashboard-container{
+    grid-template-columns:120px 1fr 120px;
+    gap:10px;
+  }
+  
+  .lobby-btn{
+    min-height:48px;
+    padding:10px 8px;
+    font-size:12px;
+  }
+}
+
+@media (max-width:768px){
+  .dashboard-container{
+    grid-template-columns:1fr;
+  }
+  
+  .dashboard-sidebar{
+    flex-direction:row;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  
+  .sidebar-left, .sidebar-right{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(80px,1fr));
+    gap:8px;
+    width:100%;
+  }
+  
+  .lobby-btn{
+    min-height:48px;
+    padding:10px 8px;
+    font-size:12px;
+  }
+}
+
+@media (max-width:520px){
+  .dashboard-container{
+    gap:8px;
+  }
+  
+  .lobby-btn{
+    min-height:44px;
+    padding:8px 6px;
+    font-size:11px;
+  }
+  
+  .course-dashboard{
+    gap:12px;
+  }
+  
+  .dashboard-header{
+    padding:16px;
+  }
+  
+  .dashboard-header h2{
+    font-size:20px;
+  }
+}
