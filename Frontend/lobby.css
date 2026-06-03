@@ -68,7 +68,7 @@
 /* Header styling to match site */
 .site-header{
 	border-bottom:1px solid rgba(255,255,255,0.03);
-	background:transparent;
+  background: linear-gradient(135deg, rgba(58, 163, 255, 0.09), rgba(96, 224, 184, 0.04));
 }
 .site-header .header-inner{
 	display:flex;

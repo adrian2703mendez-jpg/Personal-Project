@@ -116,6 +116,51 @@ button:hover,
   box-sizing: border-box;
 }
 
+/* Global site header (matches Lobby header look and spacing) */
+.site-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  background: linear-gradient(135deg, rgba(58, 163, 255, 0.09), rgba(96, 224, 184, 0.04));
+}
+
+.site-header .header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+}
+
+.brand {
+  color: var(--color-1);
+  font-weight: 800;
+  font-size: 18px;
+  text-decoration: none;
+}
+
+.header-nav {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.header-nav .nav-link {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid transparent;
+}
+
+.header-nav .nav-link:hover {
+  background: rgba(58, 163, 255, 0.06);
+  border-color: rgba(58, 163, 255, 0.12);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .card {
   background: transparent;
   max-width: 460px;
@@ -158,5 +203,21 @@ button:hover,
 
   h2 {
     font-size: 16px;
+  }
+
+  .site-header .header-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header-nav {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: flex-start;
   }
 }
