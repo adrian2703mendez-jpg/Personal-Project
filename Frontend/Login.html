@@ -69,6 +69,7 @@
 					const response = await fetch('http://localhost:5000/api/login', {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
+						credentials: 'include',
 						body: JSON.stringify({
 							email: email.value.trim(),
 							password: password.value
@@ -81,9 +82,6 @@
 						successMsg.textContent = 'Logged in successfully — redirecting...';
 						successMsg.style.color = 'var(--color-3)';
 						show(successMsg);
-						localStorage.setItem('userId', data.user.id);
-						localStorage.setItem('userEmail', data.user.email);
-						localStorage.setItem('userName', data.user.fullname);
 						form.reset();
 						setTimeout(()=> window.location.href = 'Lobby.html', 900);
 					} else {

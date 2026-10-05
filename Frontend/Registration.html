@@ -98,6 +98,7 @@
 					const response = await fetch('http://localhost:5000/api/register', {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
+						credentials: 'include',
 						body: JSON.stringify({
 							fullname: fullname.value.trim(),
 							email: email.value.trim(),
@@ -112,7 +113,6 @@
 						successMsg.textContent = 'Account created successfully — redirecting to login...';
 						show(successMsg);
 						form.reset();
-						localStorage.setItem('userId', data.userId);
 						setTimeout(()=> window.location.href = 'Login.html', 1200);
 					} else {
 						successMsg.textContent = '❌ ' + data.message;

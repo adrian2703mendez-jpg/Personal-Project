@@ -4,53 +4,120 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcrypt');
+const session = require('express-session');
+const SQLiteStore = require('connect-sqlite3')(session);
+const sqlite3 = require('sqlite3').verbose();
 
 const app = express();
-const PORT = 5000;
-const usersFile = path.join(__dirname, 'users.json');
+const PORT = process.env.PORT || 5000;
+const databaseFile = path.join(__dirname, 'course.sqlite');
+const database = new sqlite3.Database(databaseFile);
+const isProduction = process.env.NODE_ENV === 'production';
 
-// Middleware
-app.use(cors());
+function run(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    database.run(sql, params, function onRun(error) {
+      if (error) reject(error);
+      else resolve(this);
+    });
+  });
+}
+
+function get(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    database.get(sql, params, (error, row) => {
+      if (error) reject(error);
+      else resolve(row);
+    });
+  });
+}
+
+async function initializeDatabase() {
+  await run(`CREATE TABLE IF NOT EXISTS users (
+    id TEXT PRIMARY KEY,
+    fullname TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE COLLATE NOCASE,
+    password TEXT NOT NULL,
+    phone TEXT NOT NULL DEFAULT '',
+    createdAt TEXT NOT NULL,
+    progress TEXT NOT NULL
+  )`);
+
+  const userCount = await get('SELECT COUNT(*) AS count FROM users');
+  const legacyFile = path.join(__dirname, 'users.json');
+  if (userCount.count === 0 && fs.existsSync(legacyFile)) {
+    const legacyData = JSON.parse(fs.readFileSync(legacyFile, 'utf8'));
+    for (const user of legacyData.users || []) {
+      await run(
+        'INSERT OR IGNORE INTO users (id, fullname, email, password, phone, createdAt, progress) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [user.id, user.fullname, user.email, user.password, user.phone || '', user.createdAt, JSON.stringify(user.progress || defaultProgress())]
+      );
+    }
+  }
+}
+
+function defaultProgress() {
+  return {
+    completedCourses: [],
+    enrolledCourses: [],
+    lessonsCompleted: 0,
+    totalSpent: 0,
+    badges: [],
+    lastAccessed: new Date().toISOString()
+  };
+}
+
+function publicUser(user) {
+  return {
+    id: user.id,
+    fullname: user.fullname,
+    email: user.email,
+    phone: user.phone,
+    createdAt: user.createdAt,
+    progress: JSON.parse(user.progress || JSON.stringify(defaultProgress()))
+  };
+}
+
+function requireAuth(req, res, next) {
+  if (!req.session.userId) {
+    return res.status(401).json({ success: false, message: 'Authentication required' });
+  }
+  next();
+}
+
+app.use(cors({ origin: process.env.FRONTEND_ORIGIN || true, credentials: true }));
 app.use(bodyParser.json());
-
-// Initialize users.json if it doesn't exist
-if (!fs.existsSync(usersFile)) {
-  fs.writeFileSync(usersFile, JSON.stringify({ users: [] }, null, 2));
-}
-
-// Helper function to read users
-function readUsers() {
-  const data = fs.readFileSync(usersFile, 'utf8');
-  return JSON.parse(data);
-}
-
-// Helper function to write users
-function writeUsers(data) {
-  fs.writeFileSync(usersFile, JSON.stringify(data, null, 2));
-}
+app.use(session({
+  store: new SQLiteStore({ db: 'sessions.sqlite', dir: __dirname }),
+  secret: process.env.SESSION_SECRET || 'development-only-change-me',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    sameSite: isProduction ? 'strict' : 'lax',
+    secure: isProduction,
+    maxAge: 1000 * 60 * 60 * 24 * 7
+  }
+}));
 
 // Registration endpoint
 app.post('/api/register', async (req, res) => {
   try {
-    const { fullname, email, password, phone } = req.body;
+    const fullname = String(req.body.fullname || '').trim();
+    const email = String(req.body.email || '').trim().toLowerCase();
+    const password = String(req.body.password || '');
+    const phone = String(req.body.phone || '').trim();
 
-    // Validate input
-    if (!fullname || !email || !password) {
+    if (!fullname || !email || password.length < 8) {
       return res.status(400).json({ success: false, message: 'Missing required fields' });
     }
 
-    const data = readUsers();
-
-    // Check if email already exists
-    const emailExists = data.users.some(u => u.email === email);
-    if (emailExists) {
+    const existingUser = await get('SELECT id FROM users WHERE email = ?', [email]);
+    if (existingUser) {
       return res.status(400).json({ success: false, message: 'Email already registered' });
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create new user
     const newUser = {
       id: Date.now().toString(),
       fullname,
@@ -58,18 +125,13 @@ app.post('/api/register', async (req, res) => {
       password: hashedPassword,
       phone: phone || '',
       createdAt: new Date().toISOString(),
-      progress: {
-        completedCourses: [],
-        enrolledCourses: [],
-        lessonsCompleted: 0,
-        totalSpent: 0,
-        badges: [],
-        lastAccessed: new Date().toISOString()
-      }
+      progress: defaultProgress()
     };
 
-    data.users.push(newUser);
-    writeUsers(data);
+    await run(
+      'INSERT INTO users (id, fullname, email, password, phone, createdAt, progress) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [newUser.id, newUser.fullname, newUser.email, newUser.password, newUser.phone, newUser.createdAt, JSON.stringify(newUser.progress)]
+    );
 
     res.status(201).json({ success: true, message: 'Account created successfully', userId: newUser.id });
   } catch (error) {
@@ -81,68 +143,63 @@ app.post('/api/register', async (req, res) => {
 // Login endpoint
 app.post('/api/login', async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const email = String(req.body.email || '').trim().toLowerCase();
+    const password = String(req.body.password || '');
 
-    // Validate input
     if (!email || !password) {
       return res.status(400).json({ success: false, message: 'Email and password required' });
     }
 
-    const data = readUsers();
-
-    // Find user by email
-    const user = data.users.find(u => u.email === email);
+    const user = await get('SELECT * FROM users WHERE email = ?', [email]);
     if (!user) {
       return res.status(401).json({ success: false, message: 'Invalid email or password' });
     }
 
-    // Compare passwords
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
       return res.status(401).json({ success: false, message: 'Invalid email or password' });
     }
 
-    // Return user info (without password)
-    const { password: _, ...userWithoutPassword } = user;
-    res.json({ success: true, message: 'Logged in successfully', user: userWithoutPassword });
+    req.session.userId = user.id;
+    res.json({ success: true, message: 'Logged in successfully', user: publicUser(user) });
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ success: false, message: 'Server error during login' });
   }
 });
 
-// Get all users (for testing only - remove in production)
-app.get('/api/users', (req, res) => {
-  const data = readUsers();
-  const usersWithoutPasswords = data.users.map(u => {
-    const { password, ...userWithoutPassword } = u;
-    return userWithoutPassword;
+app.post('/api/logout', (req, res) => {
+  req.session.destroy(() => {
+    res.clearCookie('connect.sid');
+    res.json({ success: true, message: 'Logged out successfully' });
   });
-  res.json({ users: usersWithoutPasswords });
 });
 
-// Get user progress
-app.get('/api/progress/:userId', (req, res) => {
+app.get('/api/session', requireAuth, async (req, res) => {
   try {
-    const { userId } = req.params;
-    const data = readUsers();
-    const user = data.users.find(u => u.id === userId);
+    const user = await get('SELECT * FROM users WHERE id = ?', [req.session.userId]);
+    if (!user) {
+      return res.status(401).json({ success: false, message: 'Session user not found' });
+    }
+    res.json({ success: true, user: publicUser(user) });
+  } catch (error) {
+    console.error('Session lookup error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+app.get('/api/progress/:userId', requireAuth, async (req, res) => {
+  try {
+    if (req.params.userId !== req.session.userId) {
+      return res.status(403).json({ success: false, message: 'Forbidden' });
+    }
+    const user = await get('SELECT progress FROM users WHERE id = ?', [req.session.userId]);
 
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    res.json({
-      success: true,
-      progress: user.progress || {
-        completedCourses: [],
-        enrolledCourses: [],
-        lessonsCompleted: 0,
-        totalSpent: 0,
-        badges: [],
-        lastAccessed: new Date().toISOString()
-      }
-    });
+    res.json({ success: true, progress: JSON.parse(user.progress) });
   } catch (error) {
     console.error('Error fetching progress:', error);
     res.status(500).json({ success: false, message: 'Server error' });
@@ -150,37 +207,26 @@ app.get('/api/progress/:userId', (req, res) => {
 });
 
 // Save user progress
-app.post('/api/progress/:userId', (req, res) => {
+app.post('/api/progress/:userId', requireAuth, async (req, res) => {
   try {
-    const { userId } = req.params;
+    if (req.params.userId !== req.session.userId) {
+      return res.status(403).json({ success: false, message: 'Forbidden' });
+    }
     const { lessonsCompleted, completedCourses, enrolledCourses, totalSpent, badges } = req.body;
-    const data = readUsers();
-
-    const userIndex = data.users.findIndex(u => u.id === userId);
-    if (userIndex === -1) {
+    const user = await get('SELECT progress FROM users WHERE id = ?', [req.session.userId]);
+    if (!user) {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    // Update progress
-    if (!data.users[userIndex].progress) {
-      data.users[userIndex].progress = {
-        completedCourses: [],
-        enrolledCourses: [],
-        lessonsCompleted: 0,
-        totalSpent: 0,
-        badges: [],
-        lastAccessed: new Date().toISOString()
-      };
-    }
+    const progress = JSON.parse(user.progress);
+    if (lessonsCompleted !== undefined) progress.lessonsCompleted = lessonsCompleted;
+    if (completedCourses !== undefined) progress.completedCourses = completedCourses;
+    if (enrolledCourses !== undefined) progress.enrolledCourses = enrolledCourses;
+    if (totalSpent !== undefined) progress.totalSpent = totalSpent;
+    if (badges !== undefined) progress.badges = badges;
+    progress.lastAccessed = new Date().toISOString();
 
-    if (lessonsCompleted !== undefined) data.users[userIndex].progress.lessonsCompleted = lessonsCompleted;
-    if (completedCourses !== undefined) data.users[userIndex].progress.completedCourses = completedCourses;
-    if (enrolledCourses !== undefined) data.users[userIndex].progress.enrolledCourses = enrolledCourses;
-    if (totalSpent !== undefined) data.users[userIndex].progress.totalSpent = totalSpent;
-    if (badges !== undefined) data.users[userIndex].progress.badges = badges;
-    data.users[userIndex].progress.lastAccessed = new Date().toISOString();
-
-    writeUsers(data);
+    await run('UPDATE users SET progress = ? WHERE id = ?', [JSON.stringify(progress), req.session.userId]);
     res.json({ success: true, message: 'Progress updated successfully' });
   } catch (error) {
     console.error('Error saving progress:', error);
@@ -189,27 +235,17 @@ app.post('/api/progress/:userId', (req, res) => {
 });
 
 // Reset user progress
-app.post('/api/progress/:userId/reset', (req, res) => {
+app.post('/api/progress/:userId/reset', requireAuth, async (req, res) => {
   try {
-    const { userId } = req.params;
-    const data = readUsers();
-
-    const userIndex = data.users.findIndex(u => u.id === userId);
-    if (userIndex === -1) {
+    if (req.params.userId !== req.session.userId) {
+      return res.status(403).json({ success: false, message: 'Forbidden' });
+    }
+    const user = await get('SELECT id FROM users WHERE id = ?', [req.session.userId]);
+    if (!user) {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    // Reset progress to initial state
-    data.users[userIndex].progress = {
-      completedCourses: [],
-      enrolledCourses: [],
-      lessonsCompleted: 0,
-      totalSpent: 0,
-      badges: [],
-      lastAccessed: new Date().toISOString()
-    };
-
-    writeUsers(data);
+    await run('UPDATE users SET progress = ? WHERE id = ?', [JSON.stringify(defaultProgress()), req.session.userId]);
     res.json({ success: true, message: 'User progress reset successfully' });
   } catch (error) {
     console.error('Error resetting progress:', error);
@@ -218,25 +254,32 @@ app.post('/api/progress/:userId/reset', (req, res) => {
 });
 
 // Get user profile with all stats
-app.get('/api/user/:userId', (req, res) => {
+app.get('/api/user/:userId', requireAuth, async (req, res) => {
   try {
-    const { userId } = req.params;
-    const data = readUsers();
-    const user = data.users.find(u => u.id === userId);
+    if (req.params.userId !== req.session.userId) {
+      return res.status(403).json({ success: false, message: 'Forbidden' });
+    }
+    const user = await get('SELECT * FROM users WHERE id = ?', [req.session.userId]);
 
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    const { password, ...userWithoutPassword } = user;
-    res.json({ success: true, user: userWithoutPassword });
+    res.json({ success: true, user: publicUser(user) });
   } catch (error) {
     console.error('Error fetching user profile:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`🌱 Seeds of Wealth backend running on http://localhost:${PORT}`);
-  console.log(`📝 User data stored in ${usersFile}`);
-});
+initializeDatabase()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Seeds of Wealth backend running on http://localhost:${PORT}`);
+      console.log(`SQLite database stored in ${databaseFile}`);
+    });
+  })
+  .catch(error => {
+    console.error('Database initialization error:', error);
+    process.exit(1);
+  });

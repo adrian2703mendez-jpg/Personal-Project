@@ -279,20 +279,20 @@
   <script>
     // Initialize on page load
     window.addEventListener('DOMContentLoaded', function() {
-      const userId = localStorage.getItem('userId');
-      
-      if (!userId) {
-        window.location.href = 'Login.html';
-        return;
-      }
-
-      loadUserData(userId);
+      loadUserData();
     });
 
     // Load user data from backend
-    async function loadUserData(userId) {
+    async function loadUserData() {
       try {
-        const response = await fetch(`http://localhost:5000/api/user/${userId}`);
+        const sessionResponse = await fetch('http://localhost:5000/api/session', { credentials: 'include' });
+        if (!sessionResponse.ok) {
+          window.location.href = 'Login.html';
+          return;
+        }
+        const sessionData = await sessionResponse.json();
+        const userId = sessionData.user.id;
+        const response = await fetch(`http://localhost:5000/api/user/${userId}`, { credentials: 'include' });
         const data = await response.json();
 
         if (data.success) {
@@ -528,9 +528,8 @@
     }
 
     function logout() {
-      localStorage.removeItem('currentUser');
-      localStorage.removeItem('userProgress');
-      window.location.href = 'Login.html';
+      fetch('http://localhost:5000/api/logout', { method: 'POST', credentials: 'include' })
+        .finally(() => { window.location.href = 'Login.html'; });
     }
 
     // Settings functions
@@ -540,6 +539,7 @@
         fetch(`http://localhost:5000/api/progress/${userId}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
           body: JSON.stringify({
             completedCourses: [],
             enrolledCourses: [],
