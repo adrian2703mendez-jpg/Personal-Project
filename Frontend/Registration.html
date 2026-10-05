@@ -10,6 +10,7 @@
 	<link rel="stylesheet" href="registration.css" />
 </head>
 <body>
+  <script src="api-config.js"></script>
 	<main class="card" role="main">
 		<h1>Create an account</h1>
 		<p class="lead">Sign up to access the app. It's quick and easy.</p>
@@ -61,6 +62,7 @@
 	</main>
 
 	<script>
+		const apiBase = window.API_BASE_URL;
 		const form = document.getElementById('signupForm');
 		const fullname = document.getElementById('fullname');
 		const email = document.getElementById('email');
@@ -95,7 +97,7 @@
 			successMsg.style.display = 'none';
 			if(validate()){
 				try {
-					const response = await fetch('http://localhost:5000/api/register', {
+					const response = await fetch(`${apiBase}/api/register`, {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
 						credentials: 'include',
@@ -120,7 +122,7 @@
 						show(successMsg);
 					}
 				} catch (error) {
-					successMsg.textContent = '❌ Connection error. Make sure the backend is running on http://localhost:5000';
+					 successMsg.textContent = '❌ Connection error. Please try again later.';
 					successMsg.style.color = 'var(--danger)';
 					show(successMsg);
 				}

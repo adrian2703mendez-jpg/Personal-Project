@@ -10,7 +10,9 @@ const sqlite3 = require('sqlite3').verbose();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const databaseFile = path.join(__dirname, 'course.sqlite');
+const dataDirectory = process.env.DATA_DIR || __dirname;
+fs.mkdirSync(dataDirectory, { recursive: true });
+const databaseFile = path.join(dataDirectory, 'course.sqlite');
 const database = new sqlite3.Database(databaseFile);
 const isProduction = process.env.NODE_ENV === 'production';
 const trialDays = Number.parseInt(process.env.TRIAL_DAYS || '7', 10);
@@ -137,7 +139,7 @@ function requireAuth(req, res, next) {
 app.use(cors({ origin: process.env.FRONTEND_ORIGIN || true, credentials: true }));
 app.use(bodyParser.json());
 app.use(session({
-  store: new SQLiteStore({ db: 'sessions.sqlite', dir: __dirname }),
+  store: new SQLiteStore({ db: 'sessions.sqlite', dir: dataDirectory }),
   secret: process.env.SESSION_SECRET || 'development-only-change-me',
   resave: false,
   saveUninitialized: false,

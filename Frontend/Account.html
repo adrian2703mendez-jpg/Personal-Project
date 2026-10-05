@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="account.css">
 </head>
 <body data-requires-auth="true">
+  <script src="api-config.js"></script>
   <script src="auth.js"></script>
   <!-- Header -->
   <header class="header">
@@ -278,6 +279,7 @@
   </main>
 
   <script>
+    const apiBase = window.API_BASE_URL;
     // Initialize on page load
     window.addEventListener('DOMContentLoaded', function() {
       loadUserData();
@@ -286,14 +288,14 @@
     // Load user data from backend
     async function loadUserData() {
       try {
-        const sessionResponse = await fetch('http://localhost:5000/api/session', { credentials: 'include' });
+        const sessionResponse = await fetch(`${apiBase}/api/session`, { credentials: 'include' });
         if (!sessionResponse.ok) {
           window.location.href = 'Login.html';
           return;
         }
         const sessionData = await sessionResponse.json();
         const userId = sessionData.user.id;
-        const response = await fetch(`http://localhost:5000/api/user/${userId}`, { credentials: 'include' });
+        const response = await fetch(`${apiBase}/api/user/${userId}`, { credentials: 'include' });
         const data = await response.json();
 
         if (data.success) {
@@ -529,7 +531,7 @@
     }
 
     function logout() {
-      fetch('http://localhost:5000/api/logout', { method: 'POST', credentials: 'include' })
+      fetch(`${apiBase}/api/logout`, { method: 'POST', credentials: 'include' })
         .finally(() => { window.location.href = 'Login.html'; });
     }
 
@@ -537,7 +539,7 @@
     function resetProgress() {
       if (confirm('Are you sure you want to reset all your progress? This cannot be undone.')) {
         const userId = localStorage.getItem('userId');
-        fetch(`http://localhost:5000/api/progress/${userId}`, {
+        fetch(`${apiBase}/api/progress/${userId}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',

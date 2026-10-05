@@ -10,6 +10,7 @@
 	<link rel="stylesheet" href="login.css" />
 </head>
 <body>
+  <script src="api-config.js"></script>
 	<main class="card" role="main">
 		<h1>Log In</h1>
 		<p class="lead">Welcome back — log in to continue your journey.</p>
@@ -41,6 +42,7 @@
 	</main>
 
 	<script>
+		const apiBase = window.API_BASE_URL;
 		const form = document.getElementById('loginForm');
 		const email = document.getElementById('email');
 		const password = document.getElementById('password');
@@ -66,7 +68,7 @@
 			successMsg.style.display = 'none';
 			if(validate()){
 				try {
-					const response = await fetch('http://localhost:5000/api/login', {
+					const response = await fetch(`${apiBase}/api/login`, {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
 						credentials: 'include',
@@ -90,7 +92,7 @@
 						show(successMsg);
 					}
 				} catch (error) {
-					successMsg.textContent = '❌ Connection error. Make sure the backend is running on http://localhost:5000';
+						 successMsg.textContent = '❌ Connection error. Please try again later.';
 					successMsg.style.color = 'var(--danger)';
 					show(successMsg);
 				}

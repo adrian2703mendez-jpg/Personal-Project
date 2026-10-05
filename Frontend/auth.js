@@ -1,5 +1,5 @@
 (() => {
-  const apiBase = 'http://localhost:5000';
+  const apiBase = window.API_BASE_URL;
 
   async function getSession() {
     const response = await fetch(`${apiBase}/api/session`, {
