@@ -9,6 +9,7 @@ const SQLiteStore = require('connect-sqlite3')(session);
 const sqlite3 = require('sqlite3').verbose();
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 5000;
 const dataDirectory = process.env.DATA_DIR || __dirname;
 const frontendDirectory = path.join(__dirname, '..', 'Frontend');
@@ -223,7 +224,13 @@ app.post('/api/login', async (req, res) => {
     }
 
     req.session.userId = user.id;
-    res.json({ success: true, message: 'Logged in successfully', user: publicUser(user) });
+    req.session.save(error => {
+      if (error) {
+        console.error('Session save error:', error);
+        return res.status(500).json({ success: false, message: 'Server error during login' });
+      }
+      res.json({ success: true, message: 'Logged in successfully', user: publicUser(user) });
+    });
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ success: false, message: 'Server error during login' });
