@@ -11,6 +11,16 @@
     return data.success ? data.user : null;
   }
 
+  async function getAccess() {
+    const response = await fetch(`${apiBase}/api/access`, {
+      credentials: 'include'
+    });
+
+    if (!response.ok) return null;
+    const data = await response.json();
+    return data.success ? data.access : null;
+  }
+
   async function requireSession() {
     const user = await getSession();
     if (!user) {
@@ -20,11 +30,20 @@
     }
 
     window.currentUser = user;
+    if (document.body.dataset.requiresAccess === 'true') {
+      const access = await getAccess();
+      if (!access || !access.allowed) {
+        window.location.href = 'Upgrade.html';
+        return null;
+      }
+      window.currentAccess = access;
+    }
     document.documentElement.classList.add('authenticated');
     return user;
   }
 
   window.getSession = getSession;
+  window.getAccess = getAccess;
   window.requireSession = requireSession;
 
   document.addEventListener('click', async event => {

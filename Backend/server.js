@@ -13,6 +13,7 @@ const PORT = process.env.PORT || 5000;
 const databaseFile = path.join(__dirname, 'course.sqlite');
 const database = new sqlite3.Database(databaseFile);
 const isProduction = process.env.NODE_ENV === 'production';
+const trialDays = Number.parseInt(process.env.TRIAL_DAYS || '7', 10);
 
 function run(sql, params = []) {
   return new Promise((resolve, reject) => {
@@ -32,6 +33,29 @@ function get(sql, params = []) {
   });
 }
 
+function all(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    database.all(sql, params, (error, rows) => {
+      if (error) reject(error);
+      else resolve(rows);
+    });
+  });
+}
+
+async function ensureColumn(column, definition) {
+  const columns = await all('PRAGMA table_info(users)');
+  if (!columns.some(existingColumn => existingColumn.name === column)) {
+    await run(`ALTER TABLE users ADD COLUMN ${column} ${definition}`);
+  }
+}
+
+function trialDates(startedAt = new Date()) {
+  const start = new Date(startedAt);
+  const end = new Date(start);
+  end.setUTCDate(end.getUTCDate() + trialDays);
+  return { trialStartedAt: start.toISOString(), trialEndsAt: end.toISOString() };
+}
+
 async function initializeDatabase() {
   await run(`CREATE TABLE IF NOT EXISTS users (
     id TEXT PRIMARY KEY,
@@ -40,8 +64,15 @@ async function initializeDatabase() {
     password TEXT NOT NULL,
     phone TEXT NOT NULL DEFAULT '',
     createdAt TEXT NOT NULL,
-    progress TEXT NOT NULL
+    progress TEXT NOT NULL,
+    trialStartedAt TEXT,
+    trialEndsAt TEXT,
+    paidAccess INTEGER NOT NULL DEFAULT 0
   )`);
+
+  await ensureColumn('trialStartedAt', 'TEXT');
+  await ensureColumn('trialEndsAt', 'TEXT');
+  await ensureColumn('paidAccess', 'INTEGER NOT NULL DEFAULT 0');
 
   const userCount = await get('SELECT COUNT(*) AS count FROM users');
   const legacyFile = path.join(__dirname, 'users.json');
@@ -49,10 +80,16 @@ async function initializeDatabase() {
     const legacyData = JSON.parse(fs.readFileSync(legacyFile, 'utf8'));
     for (const user of legacyData.users || []) {
       await run(
-        'INSERT OR IGNORE INTO users (id, fullname, email, password, phone, createdAt, progress) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [user.id, user.fullname, user.email, user.password, user.phone || '', user.createdAt, JSON.stringify(user.progress || defaultProgress())]
+        'INSERT OR IGNORE INTO users (id, fullname, email, password, phone, createdAt, progress, trialStartedAt, trialEndsAt, paidAccess) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [user.id, user.fullname, user.email, user.password, user.phone || '', user.createdAt, JSON.stringify(user.progress || defaultProgress()), trialDates(user.createdAt).trialStartedAt, trialDates(user.createdAt).trialEndsAt, 0]
       );
     }
+  }
+
+  const usersWithoutTrial = await all('SELECT id, createdAt FROM users WHERE trialStartedAt IS NULL OR trialEndsAt IS NULL');
+  for (const user of usersWithoutTrial) {
+    const dates = trialDates(user.createdAt);
+    await run('UPDATE users SET trialStartedAt = ?, trialEndsAt = ? WHERE id = ?', [dates.trialStartedAt, dates.trialEndsAt, user.id]);
   }
 }
 
@@ -75,6 +112,18 @@ function publicUser(user) {
     phone: user.phone,
     createdAt: user.createdAt,
     progress: JSON.parse(user.progress || JSON.stringify(defaultProgress()))
+  };
+}
+
+function accessForUser(user) {
+  const paid = Number(user.paidAccess) === 1;
+  const trialEndsAt = user.trialEndsAt;
+  const trialActive = Boolean(trialEndsAt) && Date.now() < Date.parse(trialEndsAt);
+  return {
+    allowed: paid || trialActive,
+    status: paid ? 'paid' : trialActive ? 'trial' : 'expired',
+    trialStartedAt: user.trialStartedAt,
+    trialEndsAt
   };
 }
 
@@ -125,12 +174,13 @@ app.post('/api/register', async (req, res) => {
       password: hashedPassword,
       phone: phone || '',
       createdAt: new Date().toISOString(),
-      progress: defaultProgress()
+      progress: defaultProgress(),
+      ...trialDates()
     };
 
     await run(
-      'INSERT INTO users (id, fullname, email, password, phone, createdAt, progress) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [newUser.id, newUser.fullname, newUser.email, newUser.password, newUser.phone, newUser.createdAt, JSON.stringify(newUser.progress)]
+      'INSERT INTO users (id, fullname, email, password, phone, createdAt, progress, trialStartedAt, trialEndsAt, paidAccess) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [newUser.id, newUser.fullname, newUser.email, newUser.password, newUser.phone, newUser.createdAt, JSON.stringify(newUser.progress), newUser.trialStartedAt, newUser.trialEndsAt, 0]
     );
 
     res.status(201).json({ success: true, message: 'Account created successfully', userId: newUser.id });
@@ -184,6 +234,19 @@ app.get('/api/session', requireAuth, async (req, res) => {
     res.json({ success: true, user: publicUser(user) });
   } catch (error) {
     console.error('Session lookup error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+app.get('/api/access', requireAuth, async (req, res) => {
+  try {
+    const user = await get('SELECT trialStartedAt, trialEndsAt, paidAccess FROM users WHERE id = ?', [req.session.userId]);
+    if (!user) {
+      return res.status(401).json({ success: false, message: 'Session user not found' });
+    }
+    res.json({ success: true, access: accessForUser(user) });
+  } catch (error) {
+    console.error('Access lookup error:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
