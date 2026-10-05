@@ -151,6 +151,14 @@ app.use(session({
   }
 }));
 
+app.get('/', (req, res) => {
+  res.json({ service: 'Seeds of Wealth API', status: 'ok' });
+});
+
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
+
 // Registration endpoint
 app.post('/api/register', async (req, res) => {
   try {
