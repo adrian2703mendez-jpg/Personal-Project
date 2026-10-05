@@ -11,6 +11,7 @@ const sqlite3 = require('sqlite3').verbose();
 const app = express();
 const PORT = process.env.PORT || 5000;
 const dataDirectory = process.env.DATA_DIR || __dirname;
+const frontendDirectory = path.join(__dirname, '..', 'Frontend');
 fs.mkdirSync(dataDirectory, { recursive: true });
 const databaseFile = path.join(dataDirectory, 'course.sqlite');
 const database = new sqlite3.Database(databaseFile);
@@ -138,6 +139,7 @@ function requireAuth(req, res, next) {
 
 app.use(cors({ origin: process.env.FRONTEND_ORIGIN || true, credentials: true }));
 app.use(bodyParser.json());
+app.use(express.static(frontendDirectory));
 app.use(session({
   store: new SQLiteStore({ db: 'sessions.sqlite', dir: dataDirectory }),
   secret: process.env.SESSION_SECRET || 'development-only-change-me',
@@ -152,7 +154,7 @@ app.use(session({
 }));
 
 app.get('/', (req, res) => {
-  res.json({ service: 'Seeds of Wealth API', status: 'ok' });
+  res.sendFile(path.join(frontendDirectory, 'SoW.html'));
 });
 
 app.get('/health', (req, res) => {
